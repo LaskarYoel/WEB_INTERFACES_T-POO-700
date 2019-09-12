@@ -9,7 +9,7 @@
           <User msg="Welcome to Your Vue.js App"/>
         </b-col>
         <b-col>
-          <ChartManager/>
+          <ClockManager/>
         </b-col>
       </b-row>
       <b-row>
@@ -30,10 +30,12 @@ import User from './components/User.vue'
 import ChartManager from "@/components/ChartManager";
 import WorkingTime from "@/components/WorkingTime";
 import WorkingTimes from "@/components/WorkingTimes";
+import ClockManager from "@/components/ClockManager";
 
 export default {
   name: 'app',
   components: {
+    ClockManager,
     WorkingTimes,
     WorkingTime,
     ChartManager,
