@@ -15,11 +15,11 @@
                 </b-col>
                 <b-col>
                     <div v-if="clickCreer">
-                        <b-form-input id="input-1" v-model="newFirstname" required
+                        <b-form-input id="input-1" v-model="newFirstname " required
                                       placeholder="Enter le prenom"></b-form-input>
-                        <b-form-input id="input-1" v-model="newLastname" required
+                        <b-form-input id="input-1" v-model="newLastname " required
                                       placeholder="Enter le nom"></b-form-input>
-                        <b-form-input id="input-1" v-model="newEmail" type="email" required
+                        <b-form-input id="input-1" v-model="newEmail " type="email" required
                                       placeholder="Enter le mail"></b-form-input>
                         <b-form-input id="input-1" v-model="newPassword" type="password" required
                                       placeholder="Enter le mot de passe"></b-form-input>
@@ -64,6 +64,10 @@
                 userConnectEmail: "yoel.laskar@epitech.eu",
                 userConnectPassword: "",
                 info : "",
+                newFirstname :"",
+                newLastname :"",
+                newEmail :"",
+                newPassword :"",
             };
         },mounted() {
             const axios = require('axios');
@@ -73,7 +77,6 @@
                     this.userConnectFirst = response.data.data.user
                     this.userConnectEmail = response.data.data.email
                 })
-
         },
         methods: {
             newUser() {
@@ -82,12 +85,14 @@
                     .post('http://localhost:4000/api/users',
                        {
                             users:{
-                                "email":"test&test.fr",
-                                "username":"yoyo"
+                                "email":this.newEmail,
+                                "username": this.newFirstname
+                                //"firstname": this.newFirstname
+                              // "lastname": this.newLastname
+                              // "password": this.newPassword
                             }
                         }
                     )
-
             },
             funCreer() {
                 this.clickCreer = true,
