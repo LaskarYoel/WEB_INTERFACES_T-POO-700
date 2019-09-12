@@ -79,11 +79,14 @@
             newUser() {
                 const axios = require('axios');
                 axios
-                    .post('http://localhost:4000/api/users/',
-                        {
-                        email: "exemple@gmail.com",
-                        username: "exemple"
-                    })
+                    .post('http://localhost:4000/api/users',
+                       {
+                            users:{
+                                "email":"test&test.fr",
+                                "username":"yoyo"
+                            }
+                        }
+                    )
 
             },
             funCreer() {
