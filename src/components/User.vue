@@ -23,7 +23,7 @@
                                       placeholder="Enter le mail"></b-form-input>
                         <b-form-input id="input-1" v-model="newPassword" type="password" required
                                       placeholder="Enter le mot de passe"></b-form-input>
-                        <br><b-button variant="success">Valider</b-button>
+                        <br><b-button @click="newUser()" variant="success">Valider</b-button>
                     </div>
                     <div v-if="clickRecherche">
                         <br><br>
@@ -63,9 +63,29 @@
                 userConnectLast: "Laskar",
                 userConnectEmail: "yoel.laskar@epitech.eu",
                 userConnectPassword: "",
+                info : "",
             };
+        },mounted() {
+            const axios = require('axios');
+            axios
+                .get('http://localhost:4000/api/users/1')
+                .then(response => {
+                    this.userConnectFirst = response.data.data.user
+                    this.userConnectEmail = response.data.data.email
+                })
+
         },
         methods: {
+            newUser() {
+                const axios = require('axios');
+                axios
+                    .post('http://localhost:4000/api/users/',
+                        {
+                        email: "exemple@gmail.com",
+                        username: "exemple"
+                    })
+
+            },
             funCreer() {
                 this.clickCreer = true,
                 this.clickRecherche = false,

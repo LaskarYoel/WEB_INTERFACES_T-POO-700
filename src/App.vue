@@ -14,7 +14,7 @@
       </b-row>
       <b-row>
         <b-col>
-          <WorkingTime />
+          <ChartManager />
         </b-col>
         <b-col>
           <WorkingTimes />
