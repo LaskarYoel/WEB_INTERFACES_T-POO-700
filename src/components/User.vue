@@ -68,6 +68,10 @@
                 newLastname :"",
                 newEmail :"",
                 newPassword :"",
+                updateFirstname :"",
+                updateLastname :"",
+                updateEmail :"",
+                updatePassword :"",
             };
         },mounted() {
             const axios = require('axios');
@@ -90,6 +94,27 @@
                                 //"firstname": this.newFirstname
                               // "lastname": this.newLastname
                               // "password": this.newPassword
+                            }
+                        }
+                    )
+            },
+            updateUser() {
+                const axios = require('axios');
+
+                    this.updateFirstname = this.userConnectFirst,
+                    this.updateLastname = this.userConnectLast,
+                    this.updateEmail = this.userConnectEmail,
+                    this.updatePassword = this.userConnectPassword,
+
+                axios
+                    .put('http://localhost:4000/api/users/1',
+                       {
+                            users:{
+                                "email":this.updateEmail,
+                                "username": this.updateFirstname
+                                //"firstname": this.updateFirstname
+                              // "lastname": this.updateLastname
+                              // "password": this.updatePassword
                             }
                         }
                     )
