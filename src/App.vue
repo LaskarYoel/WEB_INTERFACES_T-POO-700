@@ -1,17 +1,43 @@
 <template>
   <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
+    <img alt="Vue logo" src="./assets/téléchargement.png">
     <HelloWorld msg="Welcome to Your Vue.js App"/>
+
+    <b-container class="bv-example-row" >
+      <b-row>
+        <b-col>
+          <User msg="Welcome to Your Vue.js App"/>
+        </b-col>
+        <b-col>
+          <ChartManager/>
+        </b-col>
+      </b-row>
+      <b-row>
+        <b-col>
+          <WorkingTime />
+        </b-col>
+        <b-col>
+          <WorkingTimes />
+        </b-col>
+      </b-row>
+    </b-container>
+
   </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import User from './components/User.vue'
+import ChartManager from "@/components/ChartManager";
+import WorkingTime from "@/components/WorkingTime";
+import WorkingTimes from "@/components/WorkingTimes";
 
 export default {
   name: 'app',
   components: {
-    HelloWorld
+    WorkingTimes,
+    WorkingTime,
+    ChartManager,
+    User
   }
 }
 </script>
@@ -25,4 +51,5 @@ export default {
   color: #2c3e50;
   margin-top: 60px;
 }
+.col { border: 1px solid transparent; }
 </style>
