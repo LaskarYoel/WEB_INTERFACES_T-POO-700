@@ -1,11 +1,8 @@
 <template>
-    <div class="">
+    <div style="margin-top: 10px" class="">
         <h2>Mes actions</h2>
-        <h4>Derniere connexion : {{lastCo}}</h4>
-
         <b-button variant="outline-success" @click="makeToast('success')">Je commence</b-button>
-        <br>
-        <b-button style="margin-top: 18px" variant="outline-danger" @click="makeToast('danger')">je m'arrete</b-button>
+        <b-button style="margin-left: 18px" variant="outline-danger" @click="makeToast('danger')">je m'arrete</b-button>
     </div>
 </template>
 

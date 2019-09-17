@@ -1,28 +1,27 @@
 <template>
     <div class="">
-        <h2>Bonjour {{userConnectFirst}} {{userConnectLast}}</h2>
-
         <b-container class="bv-example-row">
             <b-row>
                 <b-col>
-                    <div class="mt-3">
-                        <b-button-group vertical>
-                            <b-button @click="funCreer" variant="success">Créer un utilisateur</b-button>
-                            <b-button @click="funRecherche" variant="info">Rechercher un utilisateur</b-button>
-                            <b-button @click="funModif" variant="warning">Modifier mon profil</b-button>
-                        </b-button-group>
-                    </div>
-                </b-col>
-                <b-col>
-                    <div v-if="clickCreer">
-                        <b-form-input id="input-1" v-model="newFirstname " required
-                                      placeholder="Enter le prenom"></b-form-input>
-                        <b-form-input id="input-1" v-model="newLastname " required
-                                      placeholder="Enter le nom"></b-form-input>
-                        <b-form-input id="input-1" v-model="newEmail " type="email" required
-                                      placeholder="Enter le mail"></b-form-input>
-                        <b-form-input id="input-1" v-model="newPassword" type="password" required
-                                      placeholder="Enter le mot de passe"></b-form-input>
+                    <div style="margin-top: 10px" v-if="clickCreer">
+                        <h2>Creating a new user</h2>
+                        <b-form-group label-cols="6" label-cols-lg="6"  label="First name:" >
+                            <b-form-input  v-model="newFirstname " required
+                                          placeholder="Enter the first name"></b-form-input>
+                        </b-form-group>
+                        <b-form-group label-cols="6" label-cols-lg="6"  label="Last name:" >
+                            <b-form-input id="input-1" v-model="newLastname " required
+                                          placeholder="Enter the last name"></b-form-input>
+                        </b-form-group>
+                        <b-form-group label-cols="6" label-cols-lg="6"  label="Email:" >
+                            <b-form-input id="input-1" v-model="newEmail " type="email" required
+                                          placeholder="Enter the email"></b-form-input>
+                        </b-form-group>
+                        <b-form-group label-cols="6" label-cols-lg="6"  label="Password:" >
+                            <b-form-input id="input-1" v-model="newPassword" type="password" required
+                                          placeholder="Enter the password"></b-form-input>
+                        </b-form-group>
+
                         <br><b-button @click="newUser()" variant="success">Valider</b-button>
                     </div>
                     <div v-if="clickRecherche">
@@ -119,7 +118,7 @@
                         }
                     )
             },
-            funCreer() {
+            funCreerUser() {
                 this.clickCreer = true,
                 this.clickRecherche = false,
                 this.clickModif = false
