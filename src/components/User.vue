@@ -31,15 +31,26 @@
                         <br><b-button variant="info">Valider</b-button>
                     </div>
                     <div v-if="clickModif">
-                        <b-form-input id="input-1" v-model="this.userConnectFirst" required
-                                      placeholder="Enter le prenom"></b-form-input>
-                        <b-form-input id="input-1" v-model="this.userConnectLast" required
-                                      placeholder="Enter le nom"></b-form-input>
-                        <b-form-input id="input-1" v-model="this.userConnectEmail" type="email" required
-                                      placeholder="Enter le mail"></b-form-input>
-                        <b-form-input id="input-1" v-model="this.userConnectPassword" type="password" required
-                                      placeholder="Enter le mot de passe"></b-form-input>
-                        <br><b-button variant="warning">Valider</b-button>
+                            <h2>Modify my profil</h2>
+                            <b-form-group label-cols="6" label-cols-lg="6"  label="First name:" >
+                                <b-form-input  v-model="this.userConnectFirst " required
+                                               placeholder="Enter the first name"></b-form-input>
+                            </b-form-group>
+                            <b-form-group label-cols="6" label-cols-lg="6"  label="Last name:" >
+                                <b-form-input id="input-1" v-model="this.userConnectLast " required
+                                              placeholder="Enter the last name"></b-form-input>
+                            </b-form-group>
+                            <b-form-group label-cols="6" label-cols-lg="6"  label="Email:" >
+                                <b-form-input id="input-1" v-model="this.userConnectEmail " type="email" required
+                                              placeholder="Enter the email"></b-form-input>
+                            </b-form-group>
+                            <b-form-group label-cols="6" label-cols-lg="6"  label="Password:" >
+                                <b-form-input id="input-1" v-model="this.userConnectPassword" type="password" required
+                                              placeholder="Enter the password"></b-form-input>
+                            </b-form-group>
+
+                            <br><b-button @click="updateUser()" variant="warning">Valider</b-button>
+
                     </div>
                 </b-col>
             </b-row>
@@ -110,10 +121,10 @@
                        {
                             users:{
                                 "email":this.updateEmail,
-                                "username": this.updateFirstname
-                                //"firstname": this.updateFirstname
-                              // "lastname": this.updateLastname
-                              // "password": this.updatePassword
+                                //"username": this.updateFirstname
+                                "firstname": this.updateFirstname,
+                               "lastname": this.updateLastname,
+                               "password": this.updatePassword
                             }
                         }
                     )

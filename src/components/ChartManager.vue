@@ -1,11 +1,11 @@
 <template>
 
     <div id="app">
-        <!--
+
         <h1>Donut Chart</h1>
         <donut-chart id="donut" :data="donutData" :colors="arrayColors" resize="true">
         </donut-chart>
-        -->
+
     </div>
 </template>
 <script>

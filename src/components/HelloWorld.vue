@@ -1,6 +1,19 @@
 <template>
   <div>
     <p><br>Bienvue sur votre Dashboard </p>
+    <p><br>Bienvue sur votre Dashboard </p>
+    <p><br>Bienvue sur votre Dashboard </p>
+    <p><br>Bienvue sur votre Dashboard </p>
+    <p><br>Bienvue sur votre Dashboard </p>
+    <p><br>Bienvue sur votre Dashboard </p>
+    <p><br>Bienvue sur votre Dashboard </p>
+    <p><br>Bienvue sur votre Dashboard </p>
+    <p><br>Bienvue sur votre Dashboard </p>
+    <p><br>Bienvue sur votre Dashboard </p>
+    <p><br>Bienvue sur votre Dashboard </p>
+    <p><br>Bienvue sur votre Dashboard </p>
+    <p><br>Bienvue sur votre Dashboard </p>
+    <p><br>Bienvue sur votre Dashboard </p>
   </div>
 </template>
 
