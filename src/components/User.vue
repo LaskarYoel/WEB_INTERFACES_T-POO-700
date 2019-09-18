@@ -1,6 +1,6 @@
 <template>
     <div class="">
-        <b-container class="bv-example-row">
+        <b-container class="">
             <b-row>
                 <b-col>
                     <div style="margin-top: 10px" v-if="clickCreer">
@@ -23,6 +23,15 @@
                         </b-form-group>
 
                         <br><b-button @click="newUser()" variant="success">Valider</b-button>
+                    </div>
+                    <div style="margin-top: 10px" v-if="clickCreerTeam">
+                        <h2>Creating a new Team</h2>
+                        <b-form-group label-cols="6" label-cols-lg="6"  label="Name of the team:" >
+                            <b-form-input  v-model="newFirstname " required
+                                          placeholder="Enter the first name"></b-form-input>
+                        </b-form-group>
+
+                        <br><b-button @click="newTeam()" variant="success">Valider</b-button>
                     </div>
                     <div v-if="clickRecherche">
                         <br><br>
@@ -67,6 +76,7 @@
         data() {
             return {
                 clickCreer: false,
+                clickCreerTeam: false,
                 clickRecherche: false,
                 clickModif: false,
                 userConnectFirst: "Yoel",
@@ -83,7 +93,8 @@
                 updateEmail :"",
                 updatePassword :"",
             };
-        },mounted() {
+        },
+        mounted() {
             const axios = require('axios');
             axios
                 .get('http://localhost:4000/api/users/1')
@@ -91,9 +102,38 @@
                     this.userConnectFirst = response.data.data.user
                     this.userConnectEmail = response.data.data.email
                 })
+
+            this.$root.$on('funCreerUser', () => {
+                this.funCreerUser()
+            })
+            this.$root.$on('funCreerTeam', () => {
+                this.funCreerTeam()
+            })
+            this.$root.$on('funModif', () => {
+                this.funModif()
+            })
+            this.$root.$on('funRecherche', () => {
+                this.funRecherche()
+            })
         },
         methods: {
+
             newUser() {
+                const axios = require('axios');
+                axios
+                    .post('http://localhost:4000/api/users',
+                       {
+                            users:{
+                                "email":this.newEmail,
+                                "firstname": this.newFirstname,
+                               "lastname": this.newLastname,
+                               "password": this.newPassword,
+
+                            }
+                        }
+                    )
+            },
+            newTeam() {
                 const axios = require('axios');
                 axios
                     .post('http://localhost:4000/api/users',
@@ -116,12 +156,10 @@
                     this.updateEmail = this.userConnectEmail,
                     this.updatePassword = this.userConnectPassword,
 
-                axios
-                    .put('http://localhost:4000/api/users/1',
+                axios.put('http://localhost:4000/api/users/1',
                        {
                             users:{
                                 "email":this.updateEmail,
-                                //"username": this.updateFirstname
                                 "firstname": this.updateFirstname,
                                "lastname": this.updateLastname,
                                "password": this.updatePassword
@@ -129,19 +167,26 @@
                         }
                     )
             },
-            funCreerUser() {
-                this.clickCreer = true,
+            clearVar(){
+                this.clickCreer = false,
                 this.clickRecherche = false,
+                this.clickCreerTeam = false,
                 this.clickModif = false
+            },
+            funCreerUser() {
+                this.clearVar(),
+                this.clickCreer = true
+            },
+            funCreerTeam() {
+                this.clearVar(),
+                this.clickCreerTeam = true
             },
             funRecherche() {
-                this.clickCreer = false,
-                this.clickRecherche = true,
-                this.clickModif = false
+                this.clearVar(),
+                this.clickRecherche = true
             },
             funModif() {
-                this.clickCreer = false,
-                this.clickRecherche = false,
+                this.clearVar(),
                 this.clickModif = true
             },
         }
@@ -151,3 +196,4 @@
 <style scoped>
 
 </style>
+

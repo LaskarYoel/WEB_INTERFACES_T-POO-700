@@ -1,22 +1,28 @@
 <template>
     <div class="">
-        <div style="margin-top: 10px">
-            <b-navbar toggleable="lg" type="dark" variant="info">
+        <div style="margin-top: 18px">
+            <b-navbar  toggleable="lg"  variant="info">
                 <b-navbar-brand href="/">GC</b-navbar-brand>
 
                 <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
 
-                <b-collapse id="nav-collapse" is-nav>
-                    <b-navbar-nav>
-                        <b-nav-item-dropdown text="Access management" right>
-                            <b-dropdown-item href="#">Listing</b-dropdown-item>
-                            <b-dropdown-item  @click.prevent="funCreerUser" >
-                                <router-link to="/user">Create a User</router-link>
+
+
+                <b-collapse  id="nav-collapse" is-nav>
+                    <b-navbar-nav >
+                        <b-nav-item-dropdown    text="Access management" right>
+                            <b-dropdown-item href="#">
+                                <router-link     to="/user">Listing</router-link>
                             </b-dropdown-item>
-                            <b-dropdown-item @click.prevent="funCreerTeam">Create a Team</b-dropdown-item>
+                            <b-dropdown-item  @click.prevent="funCreerUser" >
+                                <router-link     to="/user">Create a User</router-link>
+                            </b-dropdown-item>
+                            <b-dropdown-item @click.prevent="funCreerTeam">
+                                <router-link to="/user">Create a Team</router-link>
+                            </b-dropdown-item>
                         </b-nav-item-dropdown>
-                        <b-nav-item href="#">
-                            <router-link to="/stats">Statistics</router-link>
+                        <b-nav-item >
+                            <router-link  to="/stats">Statistics</router-link>
                         </b-nav-item>
                     </b-navbar-nav>
 
@@ -45,21 +51,10 @@
             </b-navbar>
         </div>
 
-        <b-container class="bv-example-row" >
-            <b-row>
-                <b-col>
-                    <User ref="form" msg="Welcome to Your Vue.js App"/>
-                </b-col>
-                <b-col>
-                    <ClockManager/>
-                </b-col>
-            </b-row>
-            <b-row>
-                <b-col>
-                    <WorkingTimes />
-                </b-col>
-            </b-row>
-        </b-container>
+        <User ref="form" v-if="cacher"/>
+
+
+
     </div>
 </template>
 
@@ -74,30 +69,63 @@
     export default {
         name: 'BaseFront',
         components: {
-
             ClockManager,
             WorkingTimes,
             //HelloWorld,
             User,
-
+        },
+        data() {
+            return {
+                cacher : false ,
+                clickCreer: false,
+                clickCreerTeam: false,
+                clickRecherche: false,
+                clickModif: false,
+                userConnectFirst: "Yoel",
+                userConnectLast: "Laskar",
+                userConnectEmail: "yoel.laskar@epitech.eu",
+                userConnectPassword: "",
+                info : "",
+                newFirstname :"",
+                newLastname :"",
+                newEmail :"",
+                newPassword :"",
+                updateFirstname :"",
+                updateLastname :"",
+                updateEmail :"",
+                updatePassword :"",
+            };
         },
         methods: {
+            funCreerUser(){
+                this.$root.$emit('funCreerUser')
+            },
             funModif() {
-                this.$refs.form.funModif()
+                this.$root.$emit('funModif')
             },
             funRecherche() {
-                this.$refs.form.funRecherche()
-            },
-            funCreerUser() {
-                this.$refs.form.funCreerUser()
+                this.$root.$emit('funRecherche')
             },
             funCreerTeam() {
-                this.$refs.form.funCreerTeam()
+                this.$root.$emit('funCreerTeam')
             },
         }
     }
 </script>
 
 <style scoped>
+
+    a {
+        text-decoration: none;
+        color: black;
+    }
+
+    a:hover {
+        text-decoration: none;
+        color: black;
+    }
+    #navbar{
+        background-color: #D9A679;
+    }
 
 </style>

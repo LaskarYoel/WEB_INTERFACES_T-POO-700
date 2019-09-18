@@ -19,9 +19,10 @@ import ChartManager from "./components/ChartManager";
 Vue.use(VueRouter)
 
 
+
 const routes = [
   { path: '/stats', component: ChartManager },
-  { path: '/user', component: User }
+  { path: '/user', component: User },
 ]
 const router = new VueRouter({
   routes // short for `routes: routes`

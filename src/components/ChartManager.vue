@@ -1,7 +1,5 @@
 <template>
-
-    <div id="app">
-
+    <div >
         <h1>Donut Chart</h1>
         <donut-chart id="donut" :data="donutData" :colors="arrayColors" resize="true">
         </donut-chart>
@@ -23,7 +21,10 @@
         },
         components:{
             DonutChart
-        }
+        },
+        mounted(){
+            this.clearVar()
+        },
     }
 </script>
 <style>
@@ -36,3 +37,4 @@
         margin-top: 60px;
     }
 </style>
+
