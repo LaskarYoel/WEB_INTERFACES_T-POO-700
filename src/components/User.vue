@@ -89,10 +89,10 @@
                        {
                             users:{
                                 "email":this.newEmail,
-                                //"username": this.newFirstname
                                 "firstname": this.newFirstname,
                                "lastname": this.newLastname,
                                "password": this.newPassword,
+
                             }
                         }
                     )
