@@ -2,7 +2,7 @@
     <div class="">
         <b-container class="">
             <b-row>
-                <b-col>
+                <b-col md="6" offset-md="3">
                     <div style="margin-top: 10px" v-if="clickCreer">
                         <h2>Creating a new user</h2>
                         <b-form-group label-cols="6" label-cols-lg="6"  label="First name:" >
@@ -71,6 +71,8 @@
 </template>
 
 <script>
+    import axios from 'axios'
+
     export default {
         name: "User",
         data() {
@@ -95,13 +97,13 @@
             };
         },
         mounted() {
-            const axios = require('axios');
-            axios
-                .get('http://localhost:4000/api/users/1')
+            axios.get('http://localhost:4000/api/users/1')
                 .then(response => {
                     this.userConnectFirst = response.data.data.user
                     this.userConnectEmail = response.data.data.email
                 })
+
+
 
             this.$root.$on('funCreerUser', () => {
                 this.funCreerUser()
@@ -119,19 +121,15 @@
         methods: {
 
             newUser() {
-                const axios = require('axios');
-                axios
-                    .post('http://localhost:4000/api/users',
-                       {
-                            users:{
-                                "email":this.newEmail,
-                                "firstname": this.newFirstname,
-                               "lastname": this.newLastname,
-                               "password": this.newPassword,
-
-                            }
-                        }
-                    )
+                axios.post('http://localhost:4000/api/users',{
+                    users:{
+                        "email":this.newEmail,
+                        "firstname": this.newFirstname,
+                        "lastname": this.newLastname,
+                        "password": this.newPassword,
+                        "roles": 2
+                    }
+                }).then()
             },
             newTeam() {
                 const axios = require('axios');

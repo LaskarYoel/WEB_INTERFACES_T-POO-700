@@ -3,11 +3,7 @@
         <div style="margin-top: 18px">
             <b-navbar  toggleable="lg"  variant="info">
                 <b-navbar-brand href="/">GC</b-navbar-brand>
-
                 <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
-
-
-
                 <b-collapse  id="nav-collapse" is-nav>
                     <b-navbar-nav >
                         <b-nav-item-dropdown    text="Access management" right>
@@ -25,7 +21,6 @@
                             <router-link  to="/stats">Statistics</router-link>
                         </b-nav-item>
                     </b-navbar-nav>
-
                     <b-navbar-brand style="font-size: 16px; margin-left: auto">Welcome back Mr/Mme Dupond Tupont , last login on the 2019/09/16 at 11h26</b-navbar-brand>
 
 
@@ -38,9 +33,7 @@
 
                         <b-nav-item-dropdown right>
                             <!-- Using 'button-content' slot -->
-                            <template v-slot:button-content>
-                                <em>User</em>
-                            </template>
+                            <template v-slot:button-content><em>User</em></template>
                             <b-dropdown-item  @click.prevent="funModif" >
                                 <router-link to="/user">Profile</router-link>
                             </b-dropdown-item>
@@ -51,9 +44,15 @@
             </b-navbar>
         </div>
 
-        <User ref="form" v-if="cacher"/>
+        <b-row align-h="around">
+        </b-row>
 
-
+        <b-container class="bv-example-row">
+            <b-row>
+                <b-col cols="6" md="9" ><User ref="form" v-if="cacher"/></b-col>
+                <b-col cols="6" md="3"><ClockManager /></b-col>
+            </b-row>
+        </b-container>
 
     </div>
 </template>

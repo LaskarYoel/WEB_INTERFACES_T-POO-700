@@ -18,7 +18,9 @@ import User from "./components/User";
 import ChartManager from "./components/ChartManager";
 Vue.use(VueRouter)
 
+import axios from 'axios'
 
+Vue.use(axios)
 
 const routes = [
   { path: '/stats', component: ChartManager },
