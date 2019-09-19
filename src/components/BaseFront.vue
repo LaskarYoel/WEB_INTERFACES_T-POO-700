@@ -7,8 +7,8 @@
                 <b-collapse  id="nav-collapse" is-nav>
                     <b-navbar-nav >
                         <b-nav-item-dropdown    text="Access management" right>
-                            <b-dropdown-item href="#">
-                                <router-link     to="/user">Listing</router-link>
+                            <b-dropdown-item @click.prevent="funList">
+                                <router-link     to="/listing">Listing</router-link>
                             </b-dropdown-item>
                             <b-dropdown-item  @click.prevent="funCreerUser" >
                                 <router-link     to="/user">Create a User</router-link>
@@ -52,6 +52,9 @@
                 <b-col cols="6" md="9" ><User ref="form" v-if="cacher"/></b-col>
                 <b-col cols="6" md="3"><ClockManager /></b-col>
             </b-row>
+            <b-row>
+                <b-col cols="6" md="9" ><Listing ref="form" v-if="cacher"/></b-col>
+            </b-row>
         </b-container>
 
     </div>
@@ -63,11 +66,13 @@
     //import HelloWorld from "@/components/HelloWorld";
     import WorkingTimes from "./WorkingTimes";
     import ClockManager from "./ClockManager";
+    import Listing from "./Listing";
 
 
     export default {
         name: 'BaseFront',
         components: {
+            Listing,
             ClockManager,
             WorkingTimes,
             //HelloWorld,
@@ -96,6 +101,9 @@
             };
         },
         methods: {
+            funList(){
+                this.$root.$emit('funList')
+            },
             funCreerUser(){
                 this.$root.$emit('funCreerUser')
             },

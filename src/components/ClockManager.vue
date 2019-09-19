@@ -1,6 +1,6 @@
 <template>
     <div style="margin-top: 10px" class="">
-        <h2>Mes actions</h2>
+        <h2>Status</h2>
 
         <b-button variant="outline-success" @click="makeToastS('success')">Start</b-button>
         <b-button style="margin-left: 18px" variant="outline-danger" @click="makeToastD('danger')">Stop</b-button>
@@ -72,7 +72,8 @@
                     })
 
 
-            },makeToastD(variant = null) {
+            },
+            makeToastD(variant = null) {
                 this.resultF = 0 ;
                 this.resultT = 0 ;
                 var currentDate = new Date();
