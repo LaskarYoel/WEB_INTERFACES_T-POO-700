@@ -23,15 +23,15 @@ import Listing from "./components/Listing";
 Vue.use(axios)
 
 const routes = [
-  { path: '/stats', component: ChartManager },
-  { path: '/user', component: User },
-  { path: '/listing', component: Listing },
+    { path: '/stats', component: ChartManager },
+    { path: '/user', component: User },
+    { path: '/listing', component: Listing },
 ]
 const router = new VueRouter({
-  routes // short for `routes: routes`
+    routes // short for `routes: routes`
 })
 
 new Vue({
-  render: h => h(App),
-  router
+    render: h => h(App),
+    router
 }).$mount('#app')

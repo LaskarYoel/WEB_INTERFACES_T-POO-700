@@ -13,12 +13,14 @@
     export default {
         name: "ClockManager",
         data(){
-          return {
-              lastCo: "2019/09/10 12:45",
-              datas : null,
-              resultT : null,
-              resultF : null,
-          }
+            return {
+                lastCo: "2019/09/10 12:45",
+                datas : null,
+                resultT : null,
+                resultF : null,
+                workingtimeStart : null,
+                workingtimeEnd : null,
+            }
         },
         methods:{
             toast(etat) {
@@ -40,7 +42,10 @@
             makeToastS(variant = null) {
                 this.resultF = 0 ;
                 this.resultT = 0 ;
-                var currentDate = new Date();
+                var dateZone = new Date();
+                var decalage = dateZone.getTimezoneOffset() / 60;
+                var currentDate = dateZone
+                currentDate.setHours(currentDate.getHours()-decalage)
                 axios.get('http://localhost:4000/api/clocks/2')
                     .then(response => {
                         this.datas = response.data.data
@@ -59,6 +64,7 @@
                                     "user": 2
                                 }
                             }).then(()=>{
+                                var currentDate = new Date()
                                 this.$bvToast.toast(''+currentDate, {
                                     title: `Heure d'arrivée`,
                                     variant: variant,
@@ -76,7 +82,10 @@
             makeToastD(variant = null) {
                 this.resultF = 0 ;
                 this.resultT = 0 ;
-                var currentDate = new Date();
+                var dateZone = new Date();
+                var decalage = dateZone.getTimezoneOffset() / 60;
+                var currentDate = dateZone
+                currentDate.setHours(currentDate.getHours()-decalage)
                 axios.get('http://localhost:4000/api/clocks/2')
                     .then(response => {
                         this.datas = response.data.data
@@ -90,26 +99,55 @@
                         if (this.resultT > this.resultF) {
                             axios.post(' http://localhost:4000/api/clocks',{
                                 clocks:{
-                                    "time": currentDate,
+                                    //"time": currentDate,
+                                    "time": "2019-09-21T1:03:43.885Z",
                                     "status": false,
                                     "user": 2
                                 }
+
                             }).then(()=>{
+                                var currentDate = new Date()
                                 this.$bvToast.toast(''+currentDate, {
                                     title: `Heure de départ`,
                                     variant: variant,
                                     solid: true
                                 })
+                            }).then(()=>{
+                               this.datas.sort(this.compare)
+                                console.log(this.datas.sort(this.compare))
+                                console.log(this.datas[this.datas.length-1].time)
+                                console.log(currentDate)
+                            }).then(()=>{
+                               axios.post('http://localhost:4000/api/workingtimes/',{
+                                    workingtimes:{
+                                        "start": this.datas[this.datas.length-1].time,
+                                        //"end": this.datas[this.datas.length-2].time,
+                                        "end": "2019-09-21T01:03:43.885Z",
+                                        "user": 2
+                                    }
+                                })
                             })
-                        }
-                        else {
+                        } else {
                             this.toast(false)
                         }
                     })
 
 
             },
+            compare(a, b) {
+                const idA = a.id;
+                const idB = b.id;
 
+                let comparison = 0;
+                if (idA > idB) {
+                    comparison = 1;
+                } else if (idA < idB) {
+                    comparison = -1;
+                }
+
+                return comparison;
+
+            }
         }
     }
 </script>
