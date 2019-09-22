@@ -38,48 +38,109 @@
         },
         mounted(){
             axios.get('http://localhost:4000/api/workingtimes/2')
-                .then(response=>{
+                .then(response=> {
                     this.workTs = response.data.data
-                    console.log(this.workTs)
-                    var HourDayOne = null;
-                    var HourDayTwo = null;
-                    for (let workT in this.workTs) {
+                    var limiteDays = []
+                    for (var workT in this.workTs) {
+                        var dataDate = new Date(this.workTs[workT].start)
+                        dataDate = dataDate.getDate()+"/"+(dataDate.getMonth()+1)
+                        if (limiteDays.indexOf(dataDate) === -1){
+                            limiteDays.push(dataDate)
+                        }
+                        var dataDateEnd = new Date(this.workTs[workT].end)
+                        dataDateEnd = dataDateEnd.getDate()+"/"+(dataDateEnd.getMonth()+1)
+                        if (limiteDays.indexOf(dataDateEnd) === -1){
+                            limiteDays.push(dataDateEnd)
+                        }
+                       console.log(limiteDays)
 
-                        var dateStart = new Date(this.workTs[workT].start)
-                        var double = false ;
-                        for (var option in this.options.xaxis.categories){
-                            if (this.options.xaxis.categories[option] === (dateStart.getDate()+"/"+dateStart.getMonth()) ){
-                                double = true
+                    }
+                    if (limiteDays.length > 7){
+                        console.log("sup a 7")
+                        limiteDays.splice(0,(limiteDays.length-7))
+                        console.log(limiteDays)
+                    }
+
+                  //  console.log(limiteDays)
+                    for (var workT in this.workTs) {
+                        //console.log(workT)
+                        var dayStart = new Date(this.workTs[workT].start)
+                        dayStart = dayStart.getDate()+"/"+(dayStart.getMonth()+1)
+                        var dayEnd = new Date(this.workTs[workT].end)
+                        dayEnd = dayEnd.getDate()+"/"+(dayEnd.getMonth()+1)
+                        if (limiteDays.indexOf(dayStart) !== -1 ||limiteDays.indexOf(dayEnd) !== -1 ) {
+                            var dayStart = new Date(this.workTs[workT].start)
+                            dayStart = dayStart.getDate()
+                            var dayEnd = new Date(this.workTs[workT].end)
+                            dayEnd = dayEnd.getDate()
+
+
+                            if (this.workTs[workT-1] == null) {
+                                var dateStart = new Date(this.workTs[workT].start)
+                                this.options.xaxis.categories.push(dateStart.getDate()+"/"+(dateStart.getMonth()+1))
+
+                                var Hdeb = new Date(this.workTs[workT].start)
+                                var Hfin = new Date(this.workTs[workT].end)
+                                var inputTab = this.dateDiff(Hdeb,Hfin)
+                                this.series[0].data.push(inputTab.hour+(inputTab.min/100))
+
+
+                            }
+                            else {
+                                var dpd = new Date( this.workTs[workT-1].end ) ;dpd = dpd.getDate()
+                                var dd = new Date( this.workTs[workT].end ) ;dd = dd.getDate()
+                                if (dpd === dd ){
+                                    // on est dans le meme jour il faut additionner les H du workingTime
+                                    var Hdeb = new Date(this.workTs[workT].start)
+                                    var Hfin = new Date(this.workTs[workT].end)
+                                    var inputTab = this.dateDiff(Hdeb,Hfin)
+                                    var taille = (this.series[0].data.length - 1)
+                                    var oldData = this.series[0].data[taille]
+                                    var newData = oldData + (inputTab.hour+(inputTab.min/100))
+                                    this.series[0].data.splice(taille,1, newData)
+                                } else {
+                                    var dds = new Date( this.workTs[workT].start ) ;dds = dds.getDate()
+                                    if (dds !== dd){
+                                        //jour 1
+                                        var HourDayOne = null;
+                                        var lastMinuteDayOne = new Date(this.workTs[workT].start);
+                                        lastMinuteDayOne.setHours(23)
+                                        lastMinuteDayOne.setMinutes(59)
+                                        var deb = new Date(this.workTs[workT].start)
+                                        HourDayOne = this.dateDiff(deb,lastMinuteDayOne)
+                                        var taille = (this.series[0].data.length - 1)
+                                        var oldData = this.series[0].data[taille]
+                                        var newData = oldData + (HourDayOne.hour+(HourDayOne.min/100))
+                                        newData= this.arrondi(newData)
+                                        this.series[0].data.splice(taille,1, newData)
+
+                                        // jour 2
+                                        var HourDayTwo = null;
+                                        var fin = new Date(this.workTs[workT].end)
+                                        HourDayTwo = this.dateDiff(lastMinuteDayOne,fin)
+                                        var newData2= HourDayTwo.hour+(HourDayTwo.min/100)
+                                        newData2= this.arrondi(newData2)
+                                        this.series[0].data.push(newData2)
+                                        var dateEnd = new Date(this.workTs[workT].end)
+                                        this.options.xaxis.categories.push(dateEnd.getDate()+"/"+(dateEnd.getMonth()+1))
+                                    } else {
+                                        var dateStart = new Date(this.workTs[workT].start)
+                                        this.options.xaxis.categories.push(dateStart.getDate()+"/"+(dateStart.getMonth()+1))
+                                        var Hdeb = new Date(this.workTs[workT].start)
+                                        var Hfin = new Date(this.workTs[workT].end)
+                                        var inputTab = this.dateDiff(Hdeb,Hfin)
+                                        this.series[0].data.push(inputTab.hour+(inputTab.min/100))
+
+                                    }
+                                }
                             }
                         }
-                        if (double == false){
-                            this.options.xaxis.categories.push(dateStart.getDate()+"/"+dateStart.getMonth())
-                        }
-                        console.log(this.options)
-                        dateStart =  dateStart.getDate()
 
-                        var dateEnd = new Date(this.workTs[workT].end)
-                        dateEnd =  dateEnd.getDate()
 
-                        if (dateStart !== dateEnd ) {
-                            var lastMinuteDayOne = new Date(this.workTs[workT].start);
-                            lastMinuteDayOne.setHours(23)
-                            lastMinuteDayOne.setMinutes(59)
-                            var deb = new Date(this.workTs[workT].start)
-                            var fin = new Date(this.workTs[workT].end)
-                            HourDayOne = this.dateDiff(deb,lastMinuteDayOne)
-                            HourDayTwo = this.dateDiff(lastMinuteDayOne,fin)
-                            console.log(HourDayOne)
-                            console.log(HourDayTwo)
-
-                            this.series[0].data.push(HourDayOne.hour+(HourDayOne.min/100))
-                            this.series[0].data.push(HourDayTwo.hour+(HourDayTwo.min/100))
-
-                        }
                     }
-                }).then(()=>{
                     this.pret = true
-            })
+                })
+
         },
         methods : {
              dateDiff(date1, date2){
@@ -98,6 +159,19 @@
                 tmp = Math.floor((tmp-diff.hour)/24);   // Nombre de jours restants
                 diff.day = tmp;
                 return diff;
+            },
+             arrondi(x) {
+                return Number.parseFloat(x).toFixed(2);
+             },
+            cleanArray(array) {
+                var i, j, len = array.length, out = [], obj = {};
+                for (i = 0; i < len; i++) {
+                    obj[array[i]] = 0;
+                }
+                for (j in obj) {
+                    out.push(j);
+                }
+                return out;
             }
         }
     }

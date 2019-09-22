@@ -34,6 +34,7 @@ export default {
     BaseFront,
 
   },
+  mounted(){},
   methods: {
     funModif() {
       this.$refs.form.funModif()

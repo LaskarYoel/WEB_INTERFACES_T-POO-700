@@ -97,10 +97,11 @@
                     }).catch(error => console.log(error))
                     .then(()=>{
                         if (this.resultT > this.resultF) {
+
                             axios.post(' http://localhost:4000/api/clocks',{
                                 clocks:{
-                                    //"time": currentDate,
-                                    "time": "2019-09-21T1:03:43.885Z",
+                                    "time": currentDate,
+                                    //"time": "2019-09-22T22:03:43.885Z",
                                     "status": false,
                                     "user": 2
                                 }
@@ -114,15 +115,13 @@
                                 })
                             }).then(()=>{
                                this.datas.sort(this.compare)
-                                console.log(this.datas.sort(this.compare))
-                                console.log(this.datas[this.datas.length-1].time)
-                                console.log(currentDate)
+                                console.log(this.datas)
                             }).then(()=>{
                                axios.post('http://localhost:4000/api/workingtimes/',{
                                     workingtimes:{
                                         "start": this.datas[this.datas.length-1].time,
-                                        //"end": this.datas[this.datas.length-2].time,
-                                        "end": "2019-09-21T01:03:43.885Z",
+                                        "end": "2019-09-22T22:03:43.885Z",//BAD
+                                        //TOP "end": currentDate,
                                         "user": 2
                                     }
                                 })

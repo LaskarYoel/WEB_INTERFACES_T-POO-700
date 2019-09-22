@@ -20,7 +20,7 @@ import User from "./components/User";
 import ChartManager from "./components/ChartManager";
 import Listing from "./components/Listing";
 
-Vue.use(axios)
+//Vue.use(axios)
 
 const routes = [
     { path: '/stats', component: ChartManager },

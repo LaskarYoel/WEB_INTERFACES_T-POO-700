@@ -100,6 +100,9 @@
                 updatePassword :"",
             };
         },
+        mounted() {
+            console.log("test")
+        },
         methods: {
             funList(){
                 this.$root.$emit('funList')

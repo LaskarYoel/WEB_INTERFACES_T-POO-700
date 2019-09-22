@@ -97,6 +97,8 @@
             };
         },
         mounted() {
+            console.log("test")
+
             axios.get('http://localhost:4000/api/users/1')
                 .then(response => {
                     this.userConnectFirst = response.data.data.user
