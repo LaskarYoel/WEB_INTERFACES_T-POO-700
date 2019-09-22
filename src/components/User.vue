@@ -1,6 +1,5 @@
 <template>
     <div class="">
-        <b-container class="">
             <b-row>
                 <b-col md="6" offset-md="3">
                     <div style="margin-top: 10px" v-if="clickCreer">

@@ -56,7 +56,7 @@
                 <b-col cols="6" md="9" ><Listing ref="form" v-if="cacher"/></b-col>
             </b-row>
             <b-row>
-                <b-col cols="6" md="9" ><ChartManager/></b-col>
+                <!--<b-col cols="6" md="9" ><ChartManager v-if="cache"/></b-col>-->
             </b-row>
         </b-container>
 
@@ -86,6 +86,7 @@
         data() {
             return {
                 cacher : false ,
+                cache : true ,
                 clickCreer: false,
                 clickCreerTeam: false,
                 clickRecherche: false,
@@ -111,18 +112,23 @@
         methods: {
             funList(){
                 this.$root.$emit('funList')
+                this.cache = false
             },
             funCreerUser(){
                 this.$root.$emit('funCreerUser')
+                this.cache = false
             },
             funModif() {
                 this.$root.$emit('funModif')
+                this.cache = false
             },
             funRecherche() {
                 this.$root.$emit('funRecherche')
+                this.cache = false
             },
             funCreerTeam() {
                 this.$root.$emit('funCreerTeam')
+                this.cache = false
             },
         }
     }

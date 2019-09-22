@@ -12,9 +12,15 @@ Vue.config.productionTip = false
 import Raphael from 'raphael/raphael'
 global.Raphael = Raphael
 
+import VueGoodTablePlugin from 'vue-good-table';
+// import the styles
+import 'vue-good-table/dist/vue-good-table.css'
+
+Vue.use(VueGoodTablePlugin);
+
 Vue.use(VueRouter)
 
-import axios from 'axios'
+//import axios from 'axios'
 import VueRouter from 'vue-router'
 import User from "./components/User";
 import ChartManager from "./components/ChartManager";
