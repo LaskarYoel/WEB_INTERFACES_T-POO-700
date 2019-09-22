@@ -120,8 +120,8 @@
                                axios.post('http://localhost:4000/api/workingtimes/',{
                                     workingtimes:{
                                         "start": this.datas[this.datas.length-1].time,
-                                        "end": "2019-09-22T22:03:43.885Z",//BAD
-                                        //TOP "end": currentDate,
+                                        //"end": "2019-09-22T22:03:43.885Z",//BAD
+                                        "end": currentDate,
                                         "user": 2
                                     }
                                 })

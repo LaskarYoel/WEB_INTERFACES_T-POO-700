@@ -55,6 +55,9 @@
             <b-row>
                 <b-col cols="6" md="9" ><Listing ref="form" v-if="cacher"/></b-col>
             </b-row>
+            <b-row>
+                <b-col cols="6" md="9" ><ChartManager/></b-col>
+            </b-row>
         </b-container>
 
     </div>
@@ -67,6 +70,7 @@
     import WorkingTimes from "./WorkingTimes";
     import ClockManager from "./ClockManager";
     import Listing from "./Listing";
+    import ChartManager from "./ChartManager";
 
 
     export default {
@@ -74,6 +78,7 @@
         components: {
             Listing,
             ClockManager,
+            ChartManager,
             WorkingTimes,
             //HelloWorld,
             User,
