@@ -170,8 +170,8 @@
                     })
             },
             charMonth(){
-                axios.get('http://localhost:4000/api/workingtimes/2')
-                    .then(response=> {
+                    axios.get('http://localhost:4000/api/workingtimes/2')
+                        .then(response=> {
                         this.workTs = response.data.data
                         var limiteDays = []
                         for (var workT in this.workTs) {
