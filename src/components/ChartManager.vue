@@ -1,15 +1,15 @@
 <template>
     <div class="col-lg-12 format">
-    <h1>Statistics {{idUser}}</h1>
+        <h1>Statistics {{idUser}}</h1>
         <div class="row">
             <div class="col-lg-5">
-                            <h2>The last 7 days</h2>
-                            <apexchart v-if="pret" height="400" width="500" type="bar" :options="options" :series="series"></apexchart>
+                <h2>The last 7 days</h2>
+                <apexchart v-if="pret" height="400" width="500" type="bar" :options="options" :series="series"></apexchart>
 
             </div>
             <div class="col-lg-5">
-                            <h2>This month</h2>
-                            <apexchart v-if="pret" width="700" type="bar" :options="optionsMonth" :series="seriesMonth"></apexchart>
+                <h2>This month</h2>
+                <apexchart v-if="pret" width="700" type="bar" :options="optionsMonth" :series="seriesMonth"></apexchart>
 
             </div>
 
@@ -170,10 +170,11 @@
                     })
             },
             charMonth(){
-                    axios.get('http://localhost:4000/api/workingtimes/2')
-                        .then(response=> {
+                axios.get('http://localhost:4000/api/workingtimes/2')
+                    .then(response=> {
                         this.workTs = response.data.data
                         var limiteDays = []
+                        //
                         for (var workT in this.workTs) {
                             var dataDate = new Date(this.workTs[workT].start)
                             dataDate = (dataDate.getMonth()+1)
@@ -185,34 +186,31 @@
                             if (limiteDays.indexOf(dataDateEnd) === -1){
                                 limiteDays.push(dataDateEnd)
                             }
-
                         }
-                        //  console.log(limiteDays)
+                        //
                         for (var workT in this.workTs) {
                             //console.log(workT)
                             var dayStart = new Date(this.workTs[workT].start)
                             dayStart =(dayStart.getMonth()+1)
                             var monthNow = new Date()
                             monthNow = (monthNow.getMonth()+1)
+                            //
                             if (dayStart === monthNow ) {
                                 var dayStart = new Date(this.workTs[workT].start)
                                 dayStart = dayStart.getDate()
                                 var dayEnd = new Date(this.workTs[workT].end)
                                 dayEnd = dayEnd.getDate()
-
-
+                                //
                                 if (this.workTs[workT-1] == null) {
                                     var dateStart = new Date(this.workTs[workT].start)
                                     this.optionsMonth.xaxis.categories.push(dateStart.getDate()+"/"+(dateStart.getMonth()+1))
-
                                     var Hdeb = new Date(this.workTs[workT].start)
                                     var Hfin = new Date(this.workTs[workT].end)
                                     var inputTab = this.dateDiff(Hdeb,Hfin)
                                     this.seriesMonth[0].data.push(inputTab.hour+(inputTab.min/100))
-
-
                                 }
                                 else {
+                                    //
                                     var dpd = new Date( this.workTs[workT-1].end ) ;dpd = dpd.getDate()
                                     var dd = new Date( this.workTs[workT].end ) ;dd = dd.getDate()
                                     if (dpd === dd ){
@@ -225,6 +223,7 @@
                                         var newData = oldData + (inputTab.hour+(inputTab.min/100))
                                         this.seriesMonth[0].data.splice(taille,1, newData)
                                     } else {
+                                        //
                                         var dds = new Date( this.workTs[workT].start ) ;dds = dds.getDate()
                                         if (dds !== dd){
                                             //jour 1
@@ -239,7 +238,6 @@
                                             var newData = oldData + (HourDayOne.hour+(HourDayOne.min/100))
                                             newData= this.arrondi(newData)
                                             this.seriesMonth[0].data.splice(taille,1, newData)
-
                                             // jour 2
                                             var HourDayTwo = null;
                                             var fin = new Date(this.workTs[workT].end)
@@ -250,24 +248,22 @@
                                             var dateEnd = new Date(this.workTs[workT].end)
                                             this.optionsMonth.xaxis.categories.push(dateEnd.getDate()+"/"+(dateEnd.getMonth()+1))
                                         } else {
+                                            //
                                             var dateStart = new Date(this.workTs[workT].start)
                                             this.optionsMonth.xaxis.categories.push(dateStart.getDate()+"/"+(dateStart.getMonth()+1))
                                             var Hdeb = new Date(this.workTs[workT].start)
                                             var Hfin = new Date(this.workTs[workT].end)
                                             var inputTab = this.dateDiff(Hdeb,Hfin)
                                             this.seriesMonth[0].data.push(inputTab.hour+(inputTab.min/100))
-
                                         }
                                     }
                                 }
                             }
-
-
                         }
                         this.pret = true
                     })
             },
-             dateDiff(date1, date2){
+            dateDiff(date1, date2){
                 var diff = {}                           // Initialisation du retour
                 var tmp = date2 - date1;
 
@@ -284,9 +280,9 @@
                 diff.day = tmp;
                 return diff;
             },
-             arrondi(x) {
+            arrondi(x) {
                 return Number.parseFloat(x).toFixed(2);
-             },
+            },
             cleanArray(array) {
                 var i, j, len = array.length, out = [], obj = {};
                 for (i = 0; i < len; i++) {

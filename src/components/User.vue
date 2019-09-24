@@ -26,7 +26,7 @@
                     <div style="margin-top: 10px" v-if="clickCreerTeam">
                         <h2>Creating a new Team</h2>
                         <b-form-group label-cols="6" label-cols-lg="6"  label="Name of the team:" >
-                            <b-form-input  v-model="newFirstname " required
+                            <b-form-input  v-model="newTeamName " required
                                           placeholder="Enter the first name"></b-form-input>
                         </b-form-group>
 
@@ -62,7 +62,6 @@
                     </div>
                 </b-col>
             </b-row>
-        </b-container>
 
 
     </div>
@@ -76,7 +75,7 @@
         name: "User",
         data() {
             return {
-                clickCreer: false,
+                clickCreer: true,
                 clickCreerTeam: false,
                 clickRecherche: false,
                 clickModif: false,
@@ -93,6 +92,7 @@
                 updateLastname :"",
                 updateEmail :"",
                 updatePassword :"",
+                newTeamName :"",
             };
         },
         mounted() {
@@ -120,35 +120,45 @@
             })
         },
         methods: {
-
+            makeToast(variant,title,msg) {
+                this.$bvToast.toast(msg, {
+                    title: `${title}`,
+                    variant: variant,
+                    solid: true
+                })
+            },
             newUser() {
-                axios.post('http://localhost:4000/api/users',{
-                    users:{
-                        "email":this.newEmail,
-                        "firstname": this.newFirstname,
-                        "lastname": this.newLastname,
-                        "password": this.newPassword,
-                        "roles": 2
-                    }
-                }).then()
+                if (this.newEmail !=="" && this.newFirstname !=="" && this.newLastname !=="" && this.newPassword !==""){
+                    axios.post('http://localhost:4000/api/users',{
+                        users:{
+                            "email":this.newEmail,
+                            "firstname": this.newFirstname,
+                            "lastname": this.newLastname,
+                            "password": this.newPassword,
+                            "roles": 2
+                        }
+                    })
+                        .then(()=>{
+                            this.makeToast('success','Creating success','New user create')
+                        })
+                } else this.makeToast('danger','Creating fail','Check that all fields are filled')
+
             },
             newTeam() {
-                const axios = require('axios');
-                axios
-                    .post('http://localhost:4000/api/users',
-                       {
-                            users:{
-                                "email":this.newEmail,
-                                "firstname": this.newFirstname,
-                               "lastname": this.newLastname,
-                               "password": this.newPassword,
-
+                if (this.newTeamName !=="" ) {
+                    axios.post('http://localhost:4000/api/teams',
+                        {
+                            teams: {
+                                "name": this.newTeamName,
                             }
                         }
-                    )
+                    ).then(()=>{
+                        this.makeToast('success','Creating success','New team create')
+                    })
+                }else this.makeToast('danger','Creating fail','Check that all fields are filled')
             },
             updateUser() {
-                const axios = require('axios');
+
 
                     this.updateFirstname = this.userConnectFirst,
                     this.updateLastname = this.userConnectLast,

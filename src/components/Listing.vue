@@ -30,7 +30,7 @@
                         <template slot="table-row" slot-scope="rows">
                             <div v-if="rows.column.field === 'action'" style="text-align: center ">
                                 <b-button variant="outline-info" @click="showStats(rows.row.idUser)">Stats ({{rows.row.idUser}})</b-button>
-                                <b-button style="margin-left: 18px" variant="outline-success" id="show-btn" @click="showModal(rows.row.idUser)">
+                                <b-button style="margin-left: 18px" @click="dataUserUpdate=rows.row" v-b-modal="'modal-UserUpdate'" variant="outline-success" id="show-btn" >
                                     Modify
                                 </b-button>
                             </div>
@@ -65,9 +65,9 @@
 
                         <template slot="table-row" slot-scope="rows">
                             <div v-if="rows.column.field === 'action'" style="text-align: center ">
-                                <b-button variant="outline-info" v-b-modal="'modal-Team'" @click="showTeam(rows.row.idTeam)">Show ({{rows.row.idTeam}})</b-button>
-                                <b-button style="margin-left: 18px" variant="outline-success" id="show-btn" @click="showModal(rows.row.idUser)">
-                                    Modify
+                                <b-button variant="outline-info" v-b-modal="'modal-Team'" @click="showTeam(rows.row.idTeam)">Show</b-button>
+                                <b-button style="margin-left: 18px" v-b-modal="'modal-TeamDelete'" variant="outline-danger" @click="teamName=rows.row.name">
+                                    Delete
                                 </b-button>
                             </div>
                         </template>
@@ -133,17 +133,56 @@
 
                         <template slot="table-row" slot-scope="rows">
                             <div v-if="rows.column.field === 'action'" style="text-align: center ">
-                                <b-button pill variant="primary" @click="addMember(rows.row)"> + Add {{rows.row.idUser}}</b-button>
+                                <b-button pill variant="primary" @click="addMember(rows.row)"> + Add </b-button>
                             </div>
                         </template>
                     </vue-good-table>
                 </div>
                 <template v-slot:modal-footer="{ ok, cancel, hide }">
-                    <b-button size="xl" variant="success" @click="chelou">Confirm</b-button>
+                    <b-button size="xl" variant="success" @click="update">Confirm</b-button>
                 </template>
 
             </b-modal>
         </div>
+
+        <div>
+        <b-modal
+
+                id="modal-TeamDelete"
+                ref="modal"
+                title="Deleting a team"
+        >
+            <h4>Are you sure you want to delete this team :</h4><h3>{{teamName}}</h3>
+            <template v-slot:modal-footer="{ ok, cancel, hide }">
+                <b-button size="xl" variant="success" @click="deleteTeam()">Confirm</b-button>
+            </template>
+        </b-modal>
+             </div>
+
+        <div>
+        <b-modal id="modal-UserUpdate" ref="modal" title="Update a user">
+
+            <b-form-group label-cols="6" label-cols-lg="6"  label="First name:" >
+                <b-form-input  v-model="dataUserUpdate.first_name" required
+                               placeholder="Enter the first name"></b-form-input>
+            </b-form-group>
+            <b-form-group label-cols="6" label-cols-lg="6"  label="Last name:" >
+                <b-form-input  v-model=" dataUserUpdate.last_name" required
+                              placeholder="Enter the last name"></b-form-input>
+            </b-form-group>
+            <b-form-group label-cols="6" label-cols-lg="6"  label="Email:" >
+                <b-form-input  v-model="dataUserUpdate.email " type="email" required
+                              placeholder="Enter the email"></b-form-input>
+            </b-form-group>
+            <b-form-group label-cols="6" label-cols-lg="6"  label="Password:" >
+                <b-form-input  v-model="newPassword"  required
+                              placeholder="Enter the password"></b-form-input>
+            </b-form-group>
+            <template v-slot:modal-footer="{ ok, cancel, hide }">
+                <b-button size="xl" variant="success" @click="updateUser(dataUserUpdate.idUser)">Confirm</b-button>
+            </template>
+        </b-modal>
+             </div>
 
         <div v-if="ShowsStats">
             <ChartManager :idUser="idUser" :key="compositeKey"></ChartManager>
@@ -177,6 +216,8 @@
                 idUser : null ,
                 data : null ,
                 teamName : null ,
+                teamSelect : null ,
+                newPassword : "" ,
                 items: [],
                 itemsTeam : [],
                 columns: [
@@ -216,6 +257,7 @@
                 rowsMemberTeam: [],
                 rowsNoMemberTeam: [],
                 dataUpdate : [],
+                dataUserUpdate : {},
             }
         },
         mounted(){
@@ -226,6 +268,22 @@
 
         },
         methods :{
+            updateUser(value){
+                console.log(this.dataUserUpdate)
+
+                axios.put('http://localhost:4000/api/users/'+value,
+                    {
+                        users:{
+                            "email":this.dataUserUpdate.email,
+                            "firstname": this.dataUserUpdate.first_name,
+                            "lastname": this.dataUserUpdate.last_name
+                        }
+                    }
+                )
+            },
+            deleteTeam(value){
+                //la route api delete team n'existe pas encore
+            },
             removeMember(value){
                 this.rowsNoMemberTeam.push(value)
 
@@ -284,6 +342,7 @@
                 })
             },
             showTeam(value){
+                this.teamSelect = value
                 this.rowsMemberTeam = []
                 axios.get('http://localhost:4000/api/teams/'+value)
                     .then(response=> {
@@ -308,22 +367,27 @@
                         }
                         })
             },
-            chelou(){
+            update(){
                 this.dataUpdate = []
-                for (let us in this.rowsMemberTeam){
-                        this.dataUpdate.push(this.rowsMemberTeam[us].idUser)
+                for (let us in this.rowsNoMemberTeam){
+                        this.dataUpdate.push(this.rowsNoMemberTeam[us].idUser)
                 }
+
                 this.dataUpdate = this.cleanArray(this.dataUpdate)
                 console.log(this.dataUpdate)
 //http://localhost:4000/api/teams/suppr_user
                 axios.put('http://localhost:4000/api/teams/suppr_user',
                         {
-                            "id": 2,
+                            "id": this.teamSelect,
                             "users": this.dataUpdate
                         }).then(()=>{
+                    this.dataUpdate = []
+                    for (let us in this.rowsMemberTeam){
+                        this.dataUpdate.push(this.rowsMemberTeam[us].idUser)
+                    }
                     axios.put('http://localhost:4000/api/teams/add_user',
                         {
-                            "id": 2,
+                            "id": this.teamSelect,
                             "users": this.dataUpdate
                         })
                 })
@@ -340,6 +404,7 @@
             },
             funList(){
                 this.affiche = true
+                this.rows = []
                 axios.get('http://localhost:4000/api/users')
                     .then(response => {
                         console.log(response.data.data)
