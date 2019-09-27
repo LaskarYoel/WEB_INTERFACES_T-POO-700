@@ -6,11 +6,11 @@
                 <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
                 <b-collapse  id="nav-collapse" is-nav>
                     <b-navbar-nav >
-                        <b-nav-item-dropdown    text="Access management" right>
+                        <b-nav-item-dropdown text="Access management" right>
                             <b-dropdown-item   @click.prevent="funList();funRedirect('listing')">
                                 <router-link     to="/listing">Listing</router-link>
                             </b-dropdown-item>
-                            <b-dropdown-item to="/user" @click.prevent="funRedirect('user')" >
+                            <b-dropdown-item v-if="sessionUserConnect.role != 2" to="/user" @click.prevent="funRedirect('user')" >
                                 <router-link     to="/user">Creating</router-link>
                             </b-dropdown-item>
                         </b-nav-item-dropdown>
@@ -18,7 +18,7 @@
                             <router-link  to="/stats">Statistics</router-link>
                         </b-nav-item>
                     </b-navbar-nav>
-                    <b-navbar-brand style="font-size: 16px; margin-left: auto">Welcome back Mr/Mme {{sessionUserConnect.lastname}} Tupont , last login on the 2019/09/16 at 11h26</b-navbar-brand>
+                    <b-navbar-brand style="font-size: 16px; margin-left: auto">Welcome back Mr/Mme {{sessionUserConnect.lastname}} {{sessionUserConnect.firstname}} </b-navbar-brand>
 
 
                     <!-- Right aligned nav items -->
@@ -31,7 +31,7 @@
                         <b-nav-item-dropdown right>
                             <!-- Using 'button-content' slot -->
                             <template v-slot:button-content><em>User</em></template>
-                            <b-dropdown-item  @click.prevent="funModif" >
+                            <b-dropdown-item  @click.prevent="funRedirect('user');funModif()" >
                                 <router-link to="/user">Profile</router-link>
                             </b-dropdown-item>
                             <b-dropdown-item @click="deconnexion">Sign Out</b-dropdown-item>
@@ -116,6 +116,9 @@
 
             if (this.sessionUserConnect.id == null){
                 this.$router.push('/')
+            }
+            if (this.sessionUserConnect.role == 2){
+                this.$router.push('/stats')
             }
 
         },

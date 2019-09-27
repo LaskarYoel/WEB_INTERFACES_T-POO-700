@@ -84,7 +84,7 @@
         methods : {
             chartWeek(){
                 /*
-                axios.get('http://localhost:4000/api/workingtimes/2')
+                axios.get('http://localhost:4000/api/workingtimes/'+this.sessionUserConnect.id)
                     .then(response=> {
                         this.workTs = response.data.data
                         var limiteDays = []
@@ -188,9 +188,11 @@
                         this.pret = true
                     })
                     */
+                this.pret = true
             },
             charMonth(){
-                axios.get('http://localhost:4000/api/workingtimes/2')
+              /*
+                axios.get('http://localhost:4000/api/workingtimes/'+this.sessionUserConnect.id)
                     .then(response=> {
                         this.workTs = response.data.data
                         var limiteDays = []
@@ -282,6 +284,9 @@
                         }
                         this.pret = true
                     })
+           */
+                this.pret = true
+
             },
             dateDiff(date1, date2){
                 var diff = {}                           // Initialisation du retour

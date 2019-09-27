@@ -60,7 +60,7 @@
                 var decalage = dateZone.getTimezoneOffset() / 60;
                 var currentDate = dateZone
                 currentDate.setHours(currentDate.getHours()-decalage)
-                axios.get('http://localhost:4000/api/clocks/2')
+                axios.get('http://localhost:4000/api/clocks/'+this.sessionUserConnect.id)
                     .then(response => {
                         this.datas = response.data.data
                         for (let data in this.datas){
@@ -75,7 +75,7 @@
                                 clocks:{
                                     "time": currentDate,
                                     "status": true,
-                                    "user": 2
+                                    "user": this.sessionUserConnect.id
                                 }
                             }).then(()=>{
                                 var currentDate = new Date()
@@ -100,7 +100,7 @@
                 var decalage = dateZone.getTimezoneOffset() / 60;
                 var currentDate = dateZone
                 currentDate.setHours(currentDate.getHours()-decalage)
-                axios.get('http://localhost:4000/api/clocks/2')
+                axios.get('http://localhost:4000/api/clocks/'+this.sessionUserConnect.id)
                     .then(response => {
                         this.datas = response.data.data
                         for (let data in this.datas){
@@ -117,7 +117,7 @@
                                     "time": currentDate,
                                     //"time": "2019-09-22T22:03:43.885Z",
                                     "status": false,
-                                    "user": 2
+                                    "user": this.sessionUserConnect.id
                                 }
 
                             }).then(()=>{
@@ -136,7 +136,7 @@
                                         "start": this.datas[this.datas.length-1].time,
                                         //"end": "2019-09-22T22:03:43.885Z",//BAD
                                         "end": currentDate,
-                                        "user": 2
+                                        "user": this.sessionUserConnect.id
                                     }
                                 })
                             })

@@ -2,8 +2,10 @@
     <div class="">
             <b-row>
                 <b-col md="6" offset-md="3">
-                    <b-button @click="funCreerUser" variant="primary">Create a User</b-button>
-                    <b-button @click="funCreerTeam" style="margin-left: 19px" variant="primary">Create a Team</b-button>
+                    <div v-if="sessionUserConnect.role != 2">
+                        <b-button @click="funCreerUser" variant="primary">Create a User</b-button>
+                        <b-button @click="funCreerTeam" style="margin-left: 19px" variant="primary">Create a Team</b-button>
+                    </div>
                     <div style="margin-top: 10px" v-if="clickCreer">
                         <h2>Creating a new user</h2>
                         <b-form-group label-cols="6" label-cols-lg="6"  label="First name:" >
@@ -59,8 +61,9 @@
                                               placeholder="Enter the email"></b-form-input>
                             </b-form-group>
                             <b-form-group label-cols="6" label-cols-lg="6"  label="Password:" >
-                                <b-form-input id="input-1" v-model="this.userConnectPassword" type="password" required
+                                <b-form-input id="input-1" v-model="this.userConnectPassword" type="" required
                                               placeholder="Enter the password"></b-form-input>
+                                <p>{{userConnectPassword}}</p>
                             </b-form-group>
 
                             <br><b-button @click="updateUser()" variant="warning">Valider</b-button>
@@ -100,6 +103,7 @@
                 updatePassword :"",
                 newTeamName :"",
                 newHour :"",
+                sessionUserConnect : null,
             };
         },
         mounted(){
@@ -114,13 +118,15 @@
             if (this.sessionUserConnect.id == null){
                 this.$router.push('/')
             }
+            if (this.sessionUserConnect.role == 2){
+                this.funModif()
+            }
+
             axios.get('http://localhost:4000/api/users/1')
                 .then(response => {
                     this.userConnectFirst = response.data.data.user
                     this.userConnectEmail = response.data.data.email
                 })
-
-
 
             this.$root.$on('funCreerUser', () => {
                 this.funCreerUser()
@@ -145,14 +151,15 @@
             },
             newUser() {
                 if (this.newEmail !=="" && this.newFirstname !=="" && this.newLastname !=="" && this.newPassword !==""){
-                    axios.post('http://localhost:4000/api/users',{
-                        users:{
+                    axios.post('http://localhost:4000/api/users/sign_up',{
+                        users:
+                            {
                             "email":this.newEmail,
                             "firstname": this.newFirstname,
                             "lastname": this.newLastname,
                             "password": this.newPassword,
                             "timeByMonth": this.newHour ,
-                            "roles": 2
+                            "roles_id": 2
                         }
                     })
                         .then(()=>{
@@ -182,15 +189,18 @@
                     this.updateEmail = this.userConnectEmail,
                     this.updatePassword = this.userConnectPassword,
 
-                axios.put('http://localhost:4000/api/users/1',
+                axios.put('http://localhost:4000/api/users/update',
                        {
                             users:{
                                 "email":this.updateEmail,
                                 "firstname": this.updateFirstname,
                                "lastname": this.updateLastname,
-                               "password": this.updatePassword
-                            }
-                        }
+                               "password": this.userConnectPassword,
+                                "roles_id": 2,
+                                "timeByMonth": 35,
+                            },
+                           "id": 2
+                       }
                     )
             },
             clearVar(){

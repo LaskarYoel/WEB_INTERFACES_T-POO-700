@@ -16,7 +16,7 @@
                             :pagination-options="{
                                 enabled: true,
                                 mode: 'records',
-                                perPage: 5,
+                                perPage: 10,
                                 perPageDropdown: [10, 20, 30],
                                 dropdownAllowAll: false,
                                 setCurrentPage: 1,
@@ -28,12 +28,17 @@
                                 allLabel: 'All',
                               }">
 
-                        <template slot="table-row" slot-scope="rows">
+                        <template  slot="table-row" slot-scope="rows">
                             <div v-if="rows.column.field === 'action'" style="text-align: center ">
-                                <b-button variant="outline-info" @click="showStats(rows.row.idUser)">Stats </b-button>
-                                <b-button style="margin-left: 18px" @click="dataUserUpdate=rows.row" v-b-modal="'modal-UserUpdate'" variant="outline-success" id="show-btn" >
-                                    Modify
-                                </b-button>
+                                <div v-if="sessionUserConnect.role != 2">
+                                    <b-button variant="outline-info" @click="showStats(rows.row.idUser)">Stats </b-button>
+                                    <b-button style="margin-left: 18px" @click="dataUserUpdate=rows.row;newPassword = null" v-b-modal="'modal-UserUpdate'" variant="outline-success" id="show-btn" >
+                                        Modify
+                                    </b-button>
+                                </div>
+                                <div v-else>
+                                    <span style="color: red">Acces denied</span>
+                                </div>
                             </div>
                         </template>
                     </vue-good-table>
@@ -52,7 +57,7 @@
                             :pagination-options="{
                                 enabled: true,
                                 mode: 'records',
-                                perPage: 5,
+                                perPage: 10,
                                 perPageDropdown: [10, 20, 30],
                                 dropdownAllowAll: false,
                                 setCurrentPage: 1,
@@ -66,10 +71,15 @@
 
                         <template slot="table-row" slot-scope="rows">
                             <div v-if="rows.column.field === 'action'" style="text-align: center ">
-                                <b-button variant="outline-info" v-b-modal="'modal-Team'" @click="showTeam(rows.row.idTeam)">Show</b-button>
-                                <b-button style="margin-left: 18px" v-b-modal="'modal-TeamDelete'" variant="outline-danger" @click="teamName=rows.row.name">
-                                    Delete
-                                </b-button>
+                                <div v-if="sessionUserConnect.role != 2">
+                                    <b-button variant="outline-info" v-b-modal="'modal-Team'" @click="showTeam(rows.row.idTeam)">Show</b-button>
+                                    <b-button style="margin-left: 18px" v-b-modal="'modal-TeamDelete'" variant="outline-danger" @click="teamName=rows.row.name">
+                                        Delete
+                                    </b-button>
+                                </div>
+                                <div v-else>
+                                    <span style="color: red">Acces denied</span>
+                                </div>
                             </div>
                         </template>
                     </vue-good-table>
@@ -142,7 +152,6 @@
                 <template v-slot:modal-footer="{ ok, cancel, hide }">
                     <b-button size="xl" variant="success" @click="update">Confirm</b-button>
                 </template>
-
             </b-modal>
         </div>
 
@@ -161,7 +170,7 @@
              </div>
 
         <div>
-        <b-modal id="modal-UserUpdate" ref="modal" title="Update a user">
+         <b-modal id="modal-UserUpdate" ref="modal" title="Update a user">
 
             <b-form-group label-cols="6" label-cols-lg="6"  label="First name:" >
                 <b-form-input  v-model="dataUserUpdate.first_name" required
@@ -179,11 +188,16 @@
                 <b-form-input  v-model="newPassword"  required
                               placeholder="Enter the password"></b-form-input>
             </b-form-group>
+             <b-form-group label-cols="6" label-cols-lg="6"  label="Role:" >
+                 <b-form-select v-model="dataUserUpdate.role" :options="optionsRole"></b-form-select>
+             </b-form-group>
+
+
             <template v-slot:modal-footer="{ ok, cancel, hide }">
-                <b-button size="xl" variant="success" @click="updateUser(dataUserUpdate.idUser)">Confirm</b-button>
+                <b-button size="xl" variant="success" @click="$bvModal.hide('modal-UserUpdate');updateUser(dataUserUpdate.idUser)">Confirm</b-button>
             </template>
         </b-modal>
-             </div>
+        </div>
 
         <div v-if="ShowsStats">
             <b-button style="margin-left: 50%" variant="warning" class="" @click="retourListe()" >Return to the list </b-button>
@@ -239,7 +253,7 @@
                         field: 'role',
                     },
                     {
-                        label: '',
+                        label: 'Edit',
                         field: 'action',
                     },
                 ],
@@ -249,7 +263,7 @@
                         field: 'name',
                     },
                     {
-                        label: '',
+                        label: 'Edit',
                         field: 'action',
                     },
                 ],
@@ -260,6 +274,12 @@
                 dataUpdate : [],
                 dataUserUpdate : {},
                 newSearch : null,
+                sessionUserConnect : null,
+                optionsRole: [
+                    { value: 1, text: 'Manager', disabled: false },
+                    { value: 2, text: 'Employe', disabled: false },
+                    { value: 3, text: 'Administrator', disabled: false },
+                ]
             }
         },
         mounted(){
@@ -273,14 +293,20 @@
                 this.$router.push('/')
             }
             this.$root.$on('funList', () => {
+                this.rows = []
+                this.datas = []
                 this.funList()
             })
 
             this.newSearch = sessionStorage.getItem('search')
             console.log(this.newSearch)
             if (this.newSearch !== null) {
+                this.rows = []
+                this.datas = []
                 this.funSearch()
             } else    {
+                this.rows = []
+                this.datas = []
                 this.funList()
             }
 
@@ -290,6 +316,8 @@
                 axios.get('http://localhost:4000/api/users/search_user?nameSearch='+this.newSearch)
                     .then(response => {
                         console.log(response.data.data)
+                        this.datas = []
+                        this.rows = []
                         this.datas = response.data.data
                         for (let data in this.datas){
                             var rol = this.datas[data].role
@@ -315,16 +343,32 @@
                 })
             },
             updateUser(value){
+                let users = {}
+                if (this.newPassword !== null){
+                    users.password = this.newPassword
+                }
+                if (this.dataUserUpdate.first_name !== ""){
+                    users.firstname = this.dataUserUpdate.first_name
+                }
+                if (this.dataUserUpdate.last_name !== ""){
+                    users.lastname = this.dataUserUpdate.last_name
+                }
+                if (this.dataUserUpdate.email !== ""){
+                    users.email = this.dataUserUpdate.email
+                }
+                if (this.dataUserUpdate.role !== ""){
+                    users.role = this.dataUserUpdate.role
+                }
                 axios.put('http://localhost:4000/api/users/update/'+value,
                     {
-                        users:{
-                            "email":this.dataUserUpdate.email,
-                            "firstname": this.dataUserUpdate.first_name,
-                            "lastname": this.dataUserUpdate.last_name,
-                            "password": this.newPassword,
-                        }
+
+                        users
+
                     }
-                )
+                ).then(()=>{
+                    this.funList()
+                })
+
             },
             deleteTeam(value){
                 //la route api delete team n'existe pas encore
@@ -450,6 +494,7 @@
             funList(){
                 this.affiche = true
                 this.rows = []
+                this.datas = []
                     axios.get('http://localhost:4000/api/users')
                         .then(response => {
                             console.log(response.data.data)
