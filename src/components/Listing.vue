@@ -2,9 +2,10 @@
     <div>
 
         <b-container style="margin-top: 26px" >
+
             <b-row v-if="pret">
                 <b-col cols="12" md="12" >
-                    <div style="margin-left: 22px; margin-bottom: 22px">
+                    <div v-if="!newSearch" style="margin-left: 22px; margin-bottom: 22px">
                         <b-button pill variant="outline-primary" @click="pret=true ; pretTeam=false">Users</b-button>
                         <b-button style="margin-left: 22px" @click="pret=false ; pretTeam=true ; funListTeam()" pill variant="outline-danger">Teams</b-button>
                     </div>
@@ -29,7 +30,7 @@
 
                         <template slot="table-row" slot-scope="rows">
                             <div v-if="rows.column.field === 'action'" style="text-align: center ">
-                                <b-button variant="outline-info" @click="showStats(rows.row.idUser)">Stats ({{rows.row.idUser}})</b-button>
+                                <b-button variant="outline-info" @click="showStats(rows.row.idUser)">Stats </b-button>
                                 <b-button style="margin-left: 18px" @click="dataUserUpdate=rows.row" v-b-modal="'modal-UserUpdate'" variant="outline-success" id="show-btn" >
                                     Modify
                                 </b-button>
@@ -185,8 +186,8 @@
              </div>
 
         <div v-if="ShowsStats">
+            <b-button style="margin-left: 50%" variant="warning" class="" @click="retourListe()" >Return to the list </b-button>
             <ChartManager :idUser="idUser" :key="compositeKey"></ChartManager>
-            <b-button variant="info" class="" @click="retourListe()" >Return to the list </b-button>
         </div>
 
     </div>
@@ -258,25 +259,69 @@
                 rowsNoMemberTeam: [],
                 dataUpdate : [],
                 dataUserUpdate : {},
+                newSearch : null,
             }
         },
         mounted(){
+            this.sessionUserConnect = {id :null, email :null, firstname :null, lastname :null, role :null};
+            this.sessionUserConnect.id = sessionStorage.getItem('id')
+            this.sessionUserConnect.email = sessionStorage.getItem('email')
+            this.sessionUserConnect.firstname = sessionStorage.getItem('firstname')
+            this.sessionUserConnect.lastname = sessionStorage.getItem('lastname')
+            this.sessionUserConnect.role = sessionStorage.getItem('role')
+            if (this.sessionUserConnect.id == null){
+                this.$router.push('/')
+            }
             this.$root.$on('funList', () => {
                 this.funList()
             })
-            this.funList()
+
+            this.newSearch = sessionStorage.getItem('search')
+            console.log(this.newSearch)
+            if (this.newSearch !== null) {
+                this.funSearch()
+            } else    {
+                this.funList()
+            }
 
         },
         methods :{
+            funSearch(){
+                axios.get('http://localhost:4000/api/users/search_user?nameSearch='+this.newSearch)
+                    .then(response => {
+                        console.log(response.data.data)
+                        this.datas = response.data.data
+                        for (let data in this.datas){
+                            var rol = this.datas[data].role
+                            if (rol === 1 ) {
+                                rol = "Manager"
+                            } else if (rol === 2) {
+                                rol = " Employe"
+                            } else if (rol === 3 ) {
+                                rol = "Administrator"
+                            }
+                            this.rows.push({
+                                first_name: this.datas[data].firstname,
+                                last_name: this.datas[data].lastname ,
+                                email: this.datas[data].email,
+                                idUser: this.datas[data].id,
+                                role : rol,
+                            })
+                        }
+                    }).then(()=>{
+                    this.pret = true
+                    console.log(this.rows)
+                    sessionStorage.removeItem('search');
+                })
+            },
             updateUser(value){
-                console.log(this.dataUserUpdate)
-
-                axios.put('http://localhost:4000/api/users/'+value,
+                axios.put('http://localhost:4000/api/users/update/'+value,
                     {
                         users:{
                             "email":this.dataUserUpdate.email,
                             "firstname": this.dataUserUpdate.first_name,
-                            "lastname": this.dataUserUpdate.last_name
+                            "lastname": this.dataUserUpdate.last_name,
+                            "password": this.newPassword,
                         }
                     }
                 )
@@ -405,31 +450,32 @@
             funList(){
                 this.affiche = true
                 this.rows = []
-                axios.get('http://localhost:4000/api/users')
-                    .then(response => {
-                        console.log(response.data.data)
-                        this.datas = response.data.data
-                        for (let data in this.datas){
-                            var rol = this.datas[data].role
-                            if (rol === 1 ) {
-                                rol = "Manager"
-                            } else if (rol === 2) {
-                                rol = " Employe"
-                            } else if (rol === 3 ) {
-                                rol = "Administrator"
+                    axios.get('http://localhost:4000/api/users')
+                        .then(response => {
+                            console.log(response.data.data)
+                            this.datas = response.data.data
+                            for (let data in this.datas){
+                                var rol = this.datas[data].role
+                                if (rol === 1 ) {
+                                    rol = "Manager"
+                                } else if (rol === 2) {
+                                    rol = " Employe"
+                                } else if (rol === 3 ) {
+                                    rol = "Administrator"
+                                }
+                                this.rows.push({
+                                    first_name: this.datas[data].firstname,
+                                    last_name: this.datas[data].lastname ,
+                                    email: this.datas[data].email,
+                                    idUser: this.datas[data].id,
+                                    role : rol,
+                                })
                             }
-                            this.rows.push({
-                                first_name: this.datas[data].firstname,
-                                last_name: this.datas[data].lastname ,
-                                email: this.datas[data].email,
-                                idUser: this.datas[data].id,
-                                role : rol,
-                            })
-                        }
-                    }).then(()=>{
-                    this.pret = true
-                    console.log(this.rows)
-                })
+                        }).then(()=>{
+                        this.pret = true
+                        console.log(this.rows)
+                    })
+
             },
             funListTeam(){
                 console.log("mdr")
@@ -458,7 +504,12 @@
                 }
                 return out;
             }
-        }
+        },
+        watch: {
+            foo(newItems) {
+                this.$parent.items[1].text = newItems
+            }
+        },
     }
 </script>
 <style>

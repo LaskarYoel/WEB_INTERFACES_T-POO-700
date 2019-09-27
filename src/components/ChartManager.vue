@@ -1,6 +1,6 @@
 <template>
     <div class="col-lg-12 format">
-        <h1>Statistics {{idUser}}</h1>
+        <h1 style="margin-bottom: 36px">Statistics </h1>
         <div class="row">
             <div class="col-lg-5">
                 <h2>The last 7 days</h2>
@@ -35,29 +35,47 @@
                     chart: {id: 'vuechart-example'},
                     xaxis: {
                         //ICI C'EST LE JOUR
-                        categories: []
+                        categories: ["23/9", "24/9", "25/9", "26/9", "27/9", "28/9","29/9"]
+                        //categories: []
                     }
                 },
                 series: [{
                     //ICI C'EST LE NOMBRE D'HEURE PAR JOUR
                     name: 'series-1',
-                    data: []
+                    data: [7,8,7,6,9,7,10,]
+                    //data: []
                 }],
                 optionsMonth: {
                     chart: {id: 'vuechart-example'},
                     xaxis: {
                         //ICI C'EST LE JOUR
-                        categories: []
+                        categories: ["1","2","3","4","5","6","7","8","9","10"
+                            ,"11","12","13","14","15","16","17","18","19","20"
+                            ,"21","22","23","24","25","26","27","28","29","30"]
+                        //categories: []
                     }
                 },
                 seriesMonth: [{
                     //ICI C'EST LE NOMBRE D'HEURE PAR JOUR
                     name: 'series-1',
-                    data: []
+                    data: [7,6,9,7,10,7,6,9,7,10,7,6,9,7,10,7,6,9,7,10,7,6,9,7,10,7,6,9,7,10,]
+                    //data: []
                 }]
             }
         },
         mounted(){
+            this.sessionUserConnect = {id :null, email :null, firstname :null, lastname :null, role :null};
+
+            this.sessionUserConnect.id = sessionStorage.getItem('id')
+            this.sessionUserConnect.email = sessionStorage.getItem('email')
+            this.sessionUserConnect.firstname = sessionStorage.getItem('firstname')
+            this.sessionUserConnect.lastname = sessionStorage.getItem('lastname')
+            this.sessionUserConnect.role = sessionStorage.getItem('role')
+
+            if (this.sessionUserConnect.id == null){
+                this.$router.push('/')
+            }
+
             this.idUser = this.$parent.idUser
             this.chartWeek()
             this.charMonth()
@@ -65,6 +83,7 @@
         },
         methods : {
             chartWeek(){
+                /*
                 axios.get('http://localhost:4000/api/workingtimes/2')
                     .then(response=> {
                         this.workTs = response.data.data
@@ -168,6 +187,7 @@
                         }
                         this.pret = true
                     })
+                    */
             },
             charMonth(){
                 axios.get('http://localhost:4000/api/workingtimes/2')

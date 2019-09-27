@@ -22,6 +22,20 @@
                 workingtimeEnd : null,
             }
         },
+        mounted(){
+            this.sessionUserConnect = {id :null, email :null, firstname :null, lastname :null, role :null};
+
+            this.sessionUserConnect.id = sessionStorage.getItem('id')
+            this.sessionUserConnect.email = sessionStorage.getItem('email')
+            this.sessionUserConnect.firstname = sessionStorage.getItem('firstname')
+            this.sessionUserConnect.lastname = sessionStorage.getItem('lastname')
+            this.sessionUserConnect.role = sessionStorage.getItem('role')
+
+            if (this.sessionUserConnect.id == null){
+                this.$router.push('/')
+            }
+
+        },
         methods:{
             toast(etat) {
                 var status

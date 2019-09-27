@@ -7,27 +7,24 @@
                 <b-collapse  id="nav-collapse" is-nav>
                     <b-navbar-nav >
                         <b-nav-item-dropdown    text="Access management" right>
-                            <b-dropdown-item @click.prevent="funList">
+                            <b-dropdown-item   @click.prevent="funList();funRedirect('listing')">
                                 <router-link     to="/listing">Listing</router-link>
                             </b-dropdown-item>
-                            <b-dropdown-item  @click.prevent="funCreerUser" >
-                                <router-link     to="/user">Create a User</router-link>
-                            </b-dropdown-item>
-                            <b-dropdown-item @click.prevent="funCreerTeam">
-                                <router-link to="/user">Create a Team</router-link>
+                            <b-dropdown-item to="/user" @click.prevent="funRedirect('user')" >
+                                <router-link     to="/user">Creating</router-link>
                             </b-dropdown-item>
                         </b-nav-item-dropdown>
                         <b-nav-item >
                             <router-link  to="/stats">Statistics</router-link>
                         </b-nav-item>
                     </b-navbar-nav>
-                    <b-navbar-brand style="font-size: 16px; margin-left: auto">Welcome back Mr/Mme Dupond Tupont , last login on the 2019/09/16 at 11h26</b-navbar-brand>
+                    <b-navbar-brand style="font-size: 16px; margin-left: auto">Welcome back Mr/Mme {{sessionUserConnect.lastname}} Tupont , last login on the 2019/09/16 at 11h26</b-navbar-brand>
 
 
                     <!-- Right aligned nav items -->
                     <b-navbar-nav class="ml-auto">
                         <b-nav-form>
-                            <b-form-input size="sm" class="mr-sm-2" placeholder="Search"></b-form-input>
+                            <b-form-input size="sm" class="mr-sm-2" v-model="newSearch" placeholder="Search"></b-form-input>
                             <b-button size="sm" class="my-2 my-sm-0" type="submit" @click.prevent="funRecherche">Search</b-button>
                         </b-nav-form>
 
@@ -37,7 +34,7 @@
                             <b-dropdown-item  @click.prevent="funModif" >
                                 <router-link to="/user">Profile</router-link>
                             </b-dropdown-item>
-                            <b-dropdown-item href="#">Sign Out</b-dropdown-item>
+                            <b-dropdown-item @click="deconnexion">Sign Out</b-dropdown-item>
                         </b-nav-item-dropdown>
                     </b-navbar-nav>
                 </b-collapse>
@@ -85,6 +82,7 @@
         },
         data() {
             return {
+                newSearch : null ,
                 cacher : false ,
                 cache : true ,
                 clickCreer: false,
@@ -104,12 +102,31 @@
                 updateLastname :"",
                 updateEmail :"",
                 updatePassword :"",
+                sessionUserConnect : {id :null, email :null, firstname :null, lastname :null, role :null}
             };
         },
-        mounted() {
-            console.log("test")
+        mounted(){
+            this.sessionUserConnect = {id :null, email :null, firstname :null, lastname :null, role :null};
+
+            this.sessionUserConnect.id = sessionStorage.getItem('id')
+            this.sessionUserConnect.email = sessionStorage.getItem('email')
+            this.sessionUserConnect.firstname = sessionStorage.getItem('firstname')
+            this.sessionUserConnect.lastname = sessionStorage.getItem('lastname')
+            this.sessionUserConnect.role = sessionStorage.getItem('role')
+
+            if (this.sessionUserConnect.id == null){
+                this.$router.push('/')
+            }
+
         },
         methods: {
+            deconnexion(){
+                sessionStorage.clear()
+                this.$router.go("#")
+            },
+            funRedirect(value){
+              this.$router.push("/"+value+"")
+            },
             funList(){
                 this.$root.$emit('funList')
                 this.cache = false
@@ -123,8 +140,12 @@
                 this.cache = false
             },
             funRecherche() {
-                this.$root.$emit('funRecherche')
+                sessionStorage.setItem('search',this.newSearch);
                 this.cache = false
+                this.$router.push("/listing")
+                window.location.reload(false);
+
+
             },
             funCreerTeam() {
                 this.$root.$emit('funCreerTeam')

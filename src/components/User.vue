@@ -2,6 +2,8 @@
     <div class="">
             <b-row>
                 <b-col md="6" offset-md="3">
+                    <b-button @click="funCreerUser" variant="primary">Create a User</b-button>
+                    <b-button @click="funCreerTeam" style="margin-left: 19px" variant="primary">Create a Team</b-button>
                     <div style="margin-top: 10px" v-if="clickCreer">
                         <h2>Creating a new user</h2>
                         <b-form-group label-cols="6" label-cols-lg="6"  label="First name:" >
@@ -11,6 +13,10 @@
                         <b-form-group label-cols="6" label-cols-lg="6"  label="Last name:" >
                             <b-form-input id="input-1" v-model="newLastname " required
                                           placeholder="Enter the last name"></b-form-input>
+                        </b-form-group>
+                        <b-form-group label-cols="6" label-cols-lg="6"  label="Hour by month:" >
+                            <b-form-input id="input-1" v-model="newHour " required
+                                          placeholder="How many hours per month of work"></b-form-input>
                         </b-form-group>
                         <b-form-group label-cols="6" label-cols-lg="6"  label="Email:" >
                             <b-form-input id="input-1" v-model="newEmail " type="email" required
@@ -39,7 +45,7 @@
                         <br><b-button variant="info">Valider</b-button>
                     </div>
                     <div v-if="clickModif">
-                            <h2>Modify my profil</h2>
+                            <h2 style="margin-top: 18px">Modify my profil</h2>
                             <b-form-group label-cols="6" label-cols-lg="6"  label="First name:" >
                                 <b-form-input  v-model="this.userConnectFirst " required
                                                placeholder="Enter the first name"></b-form-input>
@@ -93,11 +99,21 @@
                 updateEmail :"",
                 updatePassword :"",
                 newTeamName :"",
+                newHour :"",
             };
         },
-        mounted() {
-            console.log("test")
+        mounted(){
+            this.sessionUserConnect = {id :null, email :null, firstname :null, lastname :null, role :null};
 
+            this.sessionUserConnect.id = sessionStorage.getItem('id')
+            this.sessionUserConnect.email = sessionStorage.getItem('email')
+            this.sessionUserConnect.firstname = sessionStorage.getItem('firstname')
+            this.sessionUserConnect.lastname = sessionStorage.getItem('lastname')
+            this.sessionUserConnect.role = sessionStorage.getItem('role')
+
+            if (this.sessionUserConnect.id == null){
+                this.$router.push('/')
+            }
             axios.get('http://localhost:4000/api/users/1')
                 .then(response => {
                     this.userConnectFirst = response.data.data.user
@@ -135,6 +151,7 @@
                             "firstname": this.newFirstname,
                             "lastname": this.newLastname,
                             "password": this.newPassword,
+                            "timeByMonth": this.newHour ,
                             "roles": 2
                         }
                     })
