@@ -1,3 +1,9 @@
+Listing.vue is a component that uses an imported module: VueGoodTable, which allows you to generate tables with a better style.
+Two different paintings are present:
+- The list of users
+- The list of teams
+Each table has different functionalities
+
 <template>
     <div>
 
@@ -6,7 +12,7 @@
             <b-row v-if="pret">
                 <b-col cols="12" md="12" >
                     <div v-if="!newSearch" style="margin-left: 22px; margin-bottom: 22px">
-                        <b-button pill variant="outline-primary" @click="pret=true ; pretTeam=false">Users</b-button>
+                        <b-button pill variant="outline-primary" @click="pret=true ; pretTeam=false;funList()">Users</b-button>
                         <b-button style="margin-left: 22px" @click="pret=false ; pretTeam=true ; funListTeam()" pill variant="outline-danger">Teams</b-button>
                     </div>
                    <vue-good-table
@@ -31,13 +37,48 @@
                         <template  slot="table-row" slot-scope="rows">
                             <div v-if="rows.column.field === 'action'" style="text-align: center ">
                                 <div v-if="sessionUserConnect.role != 2">
-                                    <b-button variant="outline-info" @click="showStats(rows.row.idUser)">Stats </b-button>
-                                    <b-button style="margin-left: 18px" @click="dataUserUpdate=rows.row;newPassword = null" v-b-modal="'modal-UserUpdate'" variant="outline-success" id="show-btn" >
-                                        Modify
-                                    </b-button>
+                                    <div v-if="sessionUserConnect.role == 1">
+                                        <div v-if="rows.row.role == 'Administrator' ">
+                                            <span style="color: red">Acces denied</span>
+                                        </div>
+                                        <div v-else>
+                                            <b-button variant="outline-info" @click="showStats(rows.row.idUser)">Stats </b-button>
+                                            <b-button style="margin-left: 18px" @click="dataUserUpdate=rows.row;newPassword = null" v-b-modal="'modal-UserUpdate'" variant="outline-success" id="show-btn" >
+                                                Modify
+                                            </b-button>
+                                        </div>
+                                    </div>
+                                    <div v-else>
+                                        <b-button variant="outline-info" @click="showStats(rows.row.idUser)">Stats </b-button>
+                                        <b-button style="margin-left: 18px" @click="dataUserUpdate=rows.row;newPassword = null" v-b-modal="'modal-UserUpdate'" variant="outline-success" id="show-btn" >
+                                            Modify
+                                        </b-button>
+                                    </div>
                                 </div>
                                 <div v-else>
                                     <span style="color: red">Acces denied</span>
+                                </div>
+                            </div>
+                            <div v-else-if="rows.column.field === 'role'" style="text-align: center ">
+                                <div v-if="sessionUserConnect.role != 2">
+                                    <div v-if="sessionUserConnect.role == 1">
+                                        <div v-if="rows.row.role== 'Administrator'">
+                                            <span>Administrator</span>
+                                        </div>
+                                        <div v-else>
+                                            <b-button style="margin-left: 18px" @click="dataUserUpdate=rows.row" v-b-modal="'modal-UserUpdateRole'" variant="outline-warning" id="show-btn" >
+                                                {{rows.row.role}}
+                                            </b-button>
+                                        </div>
+                                    </div>
+                                    <div v-else>
+                                        <b-button style="margin-left: 18px" @click="dataUserUpdate=rows.row" v-b-modal="'modal-UserUpdateRole'" variant="outline-warning" id="show-btn" >
+                                            {{rows.row.role}}
+                                        </b-button>
+                                    </div>
+                                </div>
+                                <div v-else>
+                                    <p>{{rows.row.role}}</p>
                                 </div>
                             </div>
                         </template>
@@ -47,7 +88,7 @@
             <b-row v-if="pretTeam">
                 <b-col cols="12" md="12" >
                     <div style="margin-left: 22px; margin-bottom: 22px">
-                        <b-button pill variant="outline-primary" @click="pret=true ; pretTeam=false">Users</b-button>
+                        <b-button pill variant="outline-primary" @click="pret=true ; pretTeam=false;funList()">Users</b-button>
                         <b-button style="margin-left: 22px" @click="pret=false ; pretTeam=true" pill variant="outline-danger">Teams</b-button>
                     </div>
                     <vue-good-table
@@ -171,7 +212,7 @@
 
         <div>
          <b-modal id="modal-UserUpdate" ref="modal" title="Update a user">
-
+             <h4>{{dataUserUpdate}}</h4>
             <b-form-group label-cols="6" label-cols-lg="6"  label="First name:" >
                 <b-form-input  v-model="dataUserUpdate.first_name" required
                                placeholder="Enter the first name"></b-form-input>
@@ -188,13 +229,20 @@
                 <b-form-input  v-model="newPassword"  required
                               placeholder="Enter the password"></b-form-input>
             </b-form-group>
+            <template v-slot:modal-footer="{ ok, cancel, hide }">
+                <b-button size="xl" variant="success" @click="$bvModal.hide('modal-UserUpdate');updateUser(dataUserUpdate.idUser)">Confirm</b-button>
+            </template>
+        </b-modal>
+        </div>
+
+        <div >
+         <b-modal id="modal-UserUpdateRole" ref="modal" title="Update a role">
              <b-form-group label-cols="6" label-cols-lg="6"  label="Role:" >
                  <b-form-select v-model="dataUserUpdate.role" :options="optionsRole"></b-form-select>
              </b-form-group>
 
-
             <template v-slot:modal-footer="{ ok, cancel, hide }">
-                <b-button size="xl" variant="success" @click="$bvModal.hide('modal-UserUpdate');updateUser(dataUserUpdate.idUser)">Confirm</b-button>
+                <b-button size="xl" variant="success" @click="$bvModal.hide('modal-UserUpdate');updateUserRole(dataUserUpdate)">Confirm</b-button>
             </template>
         </b-modal>
         </div>
@@ -292,23 +340,20 @@
             if (this.sessionUserConnect.id == null){
                 this.$router.push('/')
             }
+
+            this.funList()
+
             this.$root.$on('funList', () => {
-                this.rows = []
-                this.datas = []
                 this.funList()
             })
 
             this.newSearch = sessionStorage.getItem('search')
-            console.log(this.newSearch)
             if (this.newSearch !== null) {
                 this.rows = []
                 this.datas = []
                 this.funSearch()
-            } else    {
-                this.rows = []
-                this.datas = []
-                this.funList()
             }
+
 
         },
         methods :{
@@ -337,6 +382,7 @@
                             })
                         }
                     }).then(()=>{
+
                     this.pret = true
                     console.log(this.rows)
                     sessionStorage.removeItem('search');
@@ -356,14 +402,23 @@
                 if (this.dataUserUpdate.email !== ""){
                     users.email = this.dataUserUpdate.email
                 }
-                if (this.dataUserUpdate.role !== ""){
-                    users.role = this.dataUserUpdate.role
-                }
-                axios.put('http://localhost:4000/api/users/update/'+value,
+                axios.put('http://localhost:4000/api/users/update/',
                     {
-
-                        users
-
+                        users,
+                        id: value
+                    }
+                ).then(()=>{
+                    this.funList()
+                })
+            },
+            updateUserRole(value){
+                axios.put('http://localhost:4000/api/users/update/',
+                    {
+                        users: {
+                            "email": value.email,
+                            "roles_id": value.role
+                        },
+                        id: value.idUser
                     }
                 ).then(()=>{
                     this.funList()
@@ -464,7 +519,6 @@
 
                 this.dataUpdate = this.cleanArray(this.dataUpdate)
                 console.log(this.dataUpdate)
-//http://localhost:4000/api/teams/suppr_user
                 axios.put('http://localhost:4000/api/teams/suppr_user',
                         {
                             "id": this.teamSelect,
@@ -492,11 +546,11 @@
                 this.idUser = value;
             },
             funList(){
-                this.affiche = true
                 this.rows = []
                 this.datas = []
                     axios.get('http://localhost:4000/api/users')
                         .then(response => {
+                            console.log("yrdy1")
                             console.log(response.data.data)
                             this.datas = response.data.data
                             for (let data in this.datas){
@@ -519,7 +573,7 @@
                         }).then(()=>{
                         this.pret = true
                         console.log(this.rows)
-                    })
+                    }).then(()=> this.rows = this.cleanArray(this.rows))
 
             },
             funListTeam(){

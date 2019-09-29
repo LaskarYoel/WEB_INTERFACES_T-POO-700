@@ -1,7 +1,8 @@
+BaseFront.vue component is the centerpiece of the application and includes the redirection to the different components as well as the ClockManager component which allows a user to announce his arrival and departure time.
 <template>
     <div class="">
         <div style="margin-top: 18px">
-            <b-navbar  toggleable="lg"  variant="info">
+            <b-navbar  toggleable="lg"  type="light"  style="background-color: #316eb6">
                 <b-navbar-brand href="/">GC</b-navbar-brand>
                 <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
                 <b-collapse  id="nav-collapse" is-nav>
@@ -53,7 +54,7 @@
                 <b-col cols="6" md="9" ><Listing ref="form" v-if="cacher"/></b-col>
             </b-row>
             <b-row>
-                <!--<b-col cols="6" md="9" ><ChartManager v-if="cache"/></b-col>-->
+
             </b-row>
         </b-container>
 
@@ -63,11 +64,8 @@
 <script>
 
     import User from './User.vue'
-    //import HelloWorld from "@/components/HelloWorld";
-    import WorkingTimes from "./WorkingTimes";
     import ClockManager from "./ClockManager";
     import Listing from "./Listing";
-    import ChartManager from "./ChartManager";
 
 
     export default {
@@ -75,8 +73,6 @@
         components: {
             Listing,
             ClockManager,
-            ChartManager,
-            WorkingTimes,
             //HelloWorld,
             User,
         },
@@ -124,33 +120,40 @@
         },
         methods: {
             deconnexion(){
+                //we empty the browser session when disconnecting
                 sessionStorage.clear()
                 this.$router.go("#")
             },
             funRedirect(value){
+                //it is a redirection function
               this.$router.push("/"+value+"")
             },
             funList(){
+                //this function is used to display a component or part of a component
                 this.$root.$emit('funList')
                 this.cache = false
             },
             funCreerUser(){
+                //this function is used to display a component or part of a component
+
                 this.$root.$emit('funCreerUser')
                 this.cache = false
             },
             funModif() {
+                //this function is used to display a component or part of a component
+
                 this.$root.$emit('funModif')
                 this.cache = false
             },
             funRecherche() {
+                //this function is used to display a component or part of a component
                 sessionStorage.setItem('search',this.newSearch);
                 this.cache = false
                 this.$router.push("/listing")
                 window.location.reload(false);
-
-
             },
             funCreerTeam() {
+                //this function is used to display a component or part of a component
                 this.$root.$emit('funCreerTeam')
                 this.cache = false
             },

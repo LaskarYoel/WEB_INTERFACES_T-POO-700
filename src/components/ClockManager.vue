@@ -1,3 +1,6 @@
+ClockManager.vue is a component. Its role is to allow a user to announce his time of arrival and departure.
+Before each request post in the database we check that the user is not already working or paused so that the recorded data is not false
+
 <template>
     <div style="margin-top: 10px" class="">
         <h2>Status</h2>
@@ -94,6 +97,7 @@
 
             },
             makeToastD(variant = null) {
+                //once you have checked that a user is working well, we record his departure time and then create a workingtime in the database to make a couple between the arrival time and the time of arrival. departure time
                 this.resultF = 0 ;
                 this.resultT = 0 ;
                 var dateZone = new Date();

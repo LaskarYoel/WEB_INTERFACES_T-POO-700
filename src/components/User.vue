@@ -1,3 +1,5 @@
+User.vue is a component. It is thanks to him that we manage the creation, modification and elimination of users and teams
+
 <template>
     <div class="">
             <b-row>
@@ -28,6 +30,9 @@
                             <b-form-input id="input-1" v-model="newPassword" type="password" required
                                           placeholder="Enter the password"></b-form-input>
                         </b-form-group>
+                        <b-form-group label-cols="6" label-cols-lg="6"  label="Role:" >
+                            <b-form-select v-model="role" :options="optionsRole"></b-form-select>
+                        </b-form-group>
 
                         <br><b-button @click="newUser()" variant="success">Valider</b-button>
                     </div>
@@ -49,19 +54,19 @@
                     <div v-if="clickModif">
                             <h2 style="margin-top: 18px">Modify my profil</h2>
                             <b-form-group label-cols="6" label-cols-lg="6"  label="First name:" >
-                                <b-form-input  v-model="this.userConnectFirst " required
+                                <b-form-input  v-model="userConnectFirst " required
                                                placeholder="Enter the first name"></b-form-input>
                             </b-form-group>
                             <b-form-group label-cols="6" label-cols-lg="6"  label="Last name:" >
-                                <b-form-input id="input-1" v-model="this.userConnectLast " required
+                                <b-form-input id="input-1" v-model="userConnectLast " required
                                               placeholder="Enter the last name"></b-form-input>
                             </b-form-group>
                             <b-form-group label-cols="6" label-cols-lg="6"  label="Email:" >
-                                <b-form-input id="input-1" v-model="this.userConnectEmail " type="email" required
+                                <b-form-input id="input-1" v-model="userConnectEmail " type="email" required
                                               placeholder="Enter the email"></b-form-input>
                             </b-form-group>
                             <b-form-group label-cols="6" label-cols-lg="6"  label="Password:" >
-                                <b-form-input id="input-1" v-model="this.userConnectPassword" type="" required
+                                <b-form-input id="input-1" v-model="userConnectPassword" type="" required
                                               placeholder="Enter the password"></b-form-input>
                                 <p>{{userConnectPassword}}</p>
                             </b-form-group>
@@ -99,6 +104,12 @@
                 newPassword :"",
                 updateFirstname :"",
                 updateLastname :"",
+                role :null,
+                optionsRole: [
+                    { value: 1, text: 'Manager', disabled: false },
+                    { value: 2, text: 'Employe', disabled: false },
+                    { value: 3, text: 'Administrator', disabled: false },
+                ],
                 updateEmail :"",
                 updatePassword :"",
                 newTeamName :"",
@@ -122,11 +133,7 @@
                 this.funModif()
             }
 
-            axios.get('http://localhost:4000/api/users/1')
-                .then(response => {
-                    this.userConnectFirst = response.data.data.user
-                    this.userConnectEmail = response.data.data.email
-                })
+
 
             this.$root.$on('funCreerUser', () => {
                 this.funCreerUser()
@@ -150,7 +157,7 @@
                 })
             },
             newUser() {
-                if (this.newEmail !=="" && this.newFirstname !=="" && this.newLastname !=="" && this.newPassword !==""){
+                if (this.newEmail !=="" && this.newFirstname !=="" && this.newLastname !=="" && this.newPassword !==""&& this.role !==null){
                     axios.post('http://localhost:4000/api/users/sign_up',{
                         users:
                             {
@@ -159,7 +166,7 @@
                             "lastname": this.newLastname,
                             "password": this.newPassword,
                             "timeByMonth": this.newHour ,
-                            "roles_id": 2
+                            "roles_id": this.role
                         }
                     })
                         .then(()=>{
