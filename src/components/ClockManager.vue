@@ -56,16 +56,26 @@ Before each request post in the database we check that the user is not already w
                     appendToast: append
                 })
             },
+            converToString(date){
+                const month = date.getMonth() < 10 ? "0" + date.getMonth() : date.getMonth(),
+                    day = date.getDate() < 10 ? "0" + date.getDate() : date.getDate(),
+                    heure = date.getHours() < 10 ? "0" + date.getHours() : date.getHours(),
+                    min = date.getMinutes() < 10 ? "0" + date.getMinutes() : date.getMinutes(),
+                    sec = date.getSeconds() < 10 ? "0" + date.getSeconds() : date.getSeconds();
+
+                return date.getFullYear() + "-" + month + "-" + day + " " + heure + ":" + min + ":" + sec
+            },
             makeToastS(variant = null) {
                 this.resultF = 0 ;
                 this.resultT = 0 ;
                 var dateZone = new Date();
                 var decalage = dateZone.getTimezoneOffset() / 60;
                 var currentDate = dateZone
-                currentDate.setHours(currentDate.getHours()-decalage)
+                currentDate.setHours(currentDate.getHours()-decalage);
+                currentDate = this.converToString(currentDate);
                 axios.get('http://localhost:4000/api/clocks/'+this.sessionUserConnect.id)
                     .then(response => {
-                        this.datas = response.data.data
+                        this.datas = response.data.data;
                         for (let data in this.datas){
                             if(this.datas[data].status === false ){
                                 this.resultF ++
@@ -81,7 +91,7 @@ Before each request post in the database we check that the user is not already w
                                     "user": this.sessionUserConnect.id
                                 }
                             }).then(()=>{
-                                var currentDate = new Date()
+                                var currentDate = this.converToString(new Date())
                                 this.$bvToast.toast(''+currentDate, {
                                     title: `Heure d'arrivée`,
                                     variant: variant,
@@ -103,10 +113,11 @@ Before each request post in the database we check that the user is not already w
                 var dateZone = new Date();
                 var decalage = dateZone.getTimezoneOffset() / 60;
                 var currentDate = dateZone
-                currentDate.setHours(currentDate.getHours()-decalage)
+                currentDate.setHours(currentDate.getHours()-decalage);
+                currentDate = this.converToString(currentDate);
                 axios.get('http://localhost:4000/api/clocks/'+this.sessionUserConnect.id)
                     .then(response => {
-                        this.datas = response.data.data
+                        this.datas = response.data.data;
                         for (let data in this.datas){
                             if(this.datas[data].status === false ){
                                 this.resultF ++
@@ -125,7 +136,7 @@ Before each request post in the database we check that the user is not already w
                                 }
 
                             }).then(()=>{
-                                var currentDate = new Date()
+                                var currentDate = this.converToString(new Date())
                                 this.$bvToast.toast(''+currentDate, {
                                     title: `Heure de départ`,
                                     variant: variant,
