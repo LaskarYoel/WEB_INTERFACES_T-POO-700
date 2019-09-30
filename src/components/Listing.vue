@@ -89,7 +89,7 @@ Each table has different functionalities
                 <b-col cols="12" md="12" >
                     <div style="margin-left: 22px; margin-bottom: 22px">
                         <b-button pill variant="outline-primary" @click="pret=true ; pretTeam=false;funList()">Users</b-button>
-                        <b-button style="margin-left: 22px" @click="pret=false ; pretTeam=true" pill variant="outline-danger">Teams</b-button>
+                        <b-button style="margin-left: 22px" @click="pret=false; pretTeam=true" pill variant="outline-danger">Teams</b-button>
                     </div>
                     <vue-good-table
                             :columns="columnsTeam"
@@ -114,7 +114,7 @@ Each table has different functionalities
                             <div v-if="rows.column.field === 'action'" style="text-align: center ">
                                 <div v-if="sessionUserConnect.role != 2">
                                     <b-button variant="outline-info" v-b-modal="'modal-Team'" @click="showTeam(rows.row.idTeam)">Show</b-button>
-                                    <b-button style="margin-left: 18px" v-b-modal="'modal-TeamDelete'" variant="outline-danger" @click="teamName=rows.row.name">
+                                    <b-button v-if="sessionUserConnect.role == 3" style="margin-left: 18px" v-b-modal="'modal-TeamDelete'" variant="outline-danger" @click="teamName=rows.row.name">
                                         Delete
                                     </b-button>
                                 </div>
@@ -156,13 +156,14 @@ Each table has different functionalities
                               }">
 
                     <template slot="table-row" slot-scope="rows">
-                        <div v-if="rows.column.field === 'action'" style="text-align: center ">
+                        <div v-if="rows.column.field === 'action' && gestionTeam" style="text-align: center ">
                             <b-button pill variant="danger" @click="removeMember(rows.row)"> - Remove</b-button>
                         </div>
                     </template>
                 </vue-good-table>
 
-                <b-button style="margin-top: 18px;margin-bottom: 18px" pill variant="danger" @click="noMember" >Add other users</b-button>
+                <b-button v-if="gestionTeam" style="margin-top: 18px;margin-bottom: 18px" pill variant="danger" @click="noMember">Add other users</b-button>
+                <b-button v-if="gestionTeam" style="margin-top: 18px;margin-bottom: 18px; margin-left: 10px" pill variant="danger" v-b-modal="'modal-Team-manager'">Change manager</b-button>
                 <div v-if="pretNoMember">
                     <vue-good-table
                             :columns="columns"
@@ -197,6 +198,21 @@ Each table has different functionalities
         </div>
 
         <div>
+            <b-modal
+                    size="xl"
+                    id="modal-Team-manager"
+                    ref="modal"
+                    title="Change Manager"
+            >
+                <v-select ref="selectManager" :options="optionsManager"></v-select>
+
+                <template v-slot:modal-footer="{ ok, cancel, hide }">
+                    <b-button size="xl" variant="success" @click="updateManager">Confirm</b-button>
+                </template>
+            </b-modal>
+        </div>
+
+        <div>
         <b-modal
 
                 id="modal-TeamDelete"
@@ -212,7 +228,6 @@ Each table has different functionalities
 
         <div>
          <b-modal id="modal-UserUpdate" ref="modal" title="Update a user">
-             <h4>{{dataUserUpdate}}</h4>
             <b-form-group label-cols="6" label-cols-lg="6"  label="First name:" >
                 <b-form-input  v-model="dataUserUpdate.first_name" required
                                placeholder="Enter the first name"></b-form-input>
@@ -258,6 +273,7 @@ Each table has different functionalities
 <script>
     import axios from 'axios'
     import ChartManager from "./ChartManager";
+    import 'vue-select/dist/vue-select.css';
 
     export default {
         components:{
@@ -279,6 +295,7 @@ Each table has different functionalities
                 idUser : null ,
                 data : null ,
                 teamName : null ,
+                teamIdManager: null,
                 teamSelect : null ,
                 newPassword : "" ,
                 items: [],
@@ -322,12 +339,7 @@ Each table has different functionalities
                 dataUpdate : [],
                 dataUserUpdate : {},
                 newSearch : null,
-                sessionUserConnect : null,
-                optionsRole: [
-                    { value: 1, text: 'Manager', disabled: false },
-                    { value: 2, text: 'Employe', disabled: false },
-                    { value: 3, text: 'Administrator', disabled: false },
-                ]
+                sessionUserConnect : null
             }
         },
         mounted(){
@@ -356,6 +368,34 @@ Each table has different functionalities
 
 
         },
+        computed: {
+            optionsRole(){
+                if (this.sessionUserConnect.role == 3){
+                    return [
+                        { value: 1, text: 'Manager', disabled: false },
+                        { value: 2, text: 'Employe', disabled: false },
+                        { value: 3, text: 'Administrator', disabled: false }
+                    ]
+                } else{
+                    return [
+                        { value: 1, text: 'Manager', disabled: false },
+                        { value: 2, text: 'Employe', disabled: false }
+                    ]
+                }
+            },
+            optionsManager(){
+                let list = [];
+                for(let member of this.rowsMemberTeam){
+                    if (member.role !== "Employe")
+                        list.push({label: member.first_name + " " + member.last_name, value: member.idUser});
+                }
+
+                return list;
+            },
+            gestionTeam(){
+                return this.sessionUserConnect.id == this.teamIdManager || this.sessionUserConnect.role === "3"
+            }
+        },
         methods :{
             funSearch(){
                 axios.get('http://localhost:4000/api/users/search_user?nameSearch='+this.newSearch)
@@ -383,8 +423,7 @@ Each table has different functionalities
                         }
                     }).then(()=>{
 
-                    this.pret = true
-                    console.log(this.rows)
+                    this.pret = true;
                     sessionStorage.removeItem('search');
                 })
             },
@@ -450,13 +489,11 @@ Each table has different functionalities
                 this.rowsNoMemberTeam = []
                 axios.get('http://localhost:4000/api/users')
                     .then(response => {
-                        console.log(response.data.data)
-                        this.datas = response.data.data
+                        this.datas = response.data.data;
                         for (let data in this.datas){
                             var add = true
                            for (let us in this.rowsMemberTeam){
-                               console.log("us"+us)
-                               console.log("this.datas[data].id"+this.datas[data].id)
+                               console.log("this.datas[data].id"+this.datas[data].id);
                                if (this.rowsMemberTeam[us].idUser === this.datas[data].id){
                                    add = false
                                }
@@ -490,22 +527,23 @@ Each table has different functionalities
                 this.rowsMemberTeam = []
                 axios.get('http://localhost:4000/api/teams/'+value)
                     .then(response=> {
-                        this.teamName = response.data.data.name
-                        this.datas = response.data.data.users
-                        for (let data in this.datas) {
-                            var rol = this.datas[data].role
-                            if (rol === 1) {
-                                rol = "Manager"
-                            } else if (rol === 2) {
-                                rol = " Employe"
-                            } else if (rol === 3) {
-                                rol = "Administrator"
-                            }
+                        this.teamName = response.data.data.name;
+                        this.teamIdManager = response.data.data.manager;
+                        this.datas = response.data.data.users;
+                        for (let data of this.datas) {
+                            let rol = data.role;
+                            if (rol === 1 )
+                                rol = "Manager";
+                            else if (rol === 2)
+                                rol = "Employe";
+                            else if (rol === 3 )
+                                rol = "Administrator";
+
                             this.rowsMemberTeam.push({
-                                first_name: this.datas[data].firstname,
-                                last_name: this.datas[data].lastname,
-                                email: this.datas[data].email,
-                                idUser: this.datas[data].id,
+                                first_name: data.firstname,
+                                last_name: data.lastname,
+                                email: data.email,
+                                idUser: data.id,
                                 role: rol,
                             })
                         }
@@ -513,27 +551,33 @@ Each table has different functionalities
             },
             update(){
                 this.dataUpdate = []
-                for (let us in this.rowsNoMemberTeam){
-                        this.dataUpdate.push(this.rowsNoMemberTeam[us].idUser)
+                for (let us in this.rowsMemberTeam){
+                    this.dataUpdate.push(this.rowsMemberTeam[us].idUser)
                 }
-
-                this.dataUpdate = this.cleanArray(this.dataUpdate)
-                console.log(this.dataUpdate)
-                axios.put('http://localhost:4000/api/teams/suppr_user',
+                this.dataUpdate = this.cleanArray(this.dataUpdate);
+                axios.put('http://localhost:4000/api/teams/change_user',
                         {
                             "id": this.teamSelect,
                             "users": this.dataUpdate
                         }).then(()=>{
-                    this.dataUpdate = []
-                    for (let us in this.rowsMemberTeam){
-                        this.dataUpdate.push(this.rowsMemberTeam[us].idUser)
-                    }
-                    axios.put('http://localhost:4000/api/teams/add_user',
-                        {
-                            "id": this.teamSelect,
-                            "users": this.dataUpdate
-                        })
+	                        this.makeToast('success','Changing success','Member sucessfully change')
                 })
+            },
+	        makeToast(variant,title,msg) {
+		        this.$bvToast.toast(msg, {
+			        title: `${title}`,
+			        variant: variant,
+			        solid: true
+		        })
+	        },
+            updateManager(){
+                axios.put('http://localhost:4000/api/teams/change_manager',
+                    {
+                        "id": this.teamSelect,
+                        "managerID": this.$refs.selectManager.selectedValue[0].value
+                    }).then(()=>{
+                        this.makeToast('success','Changing success','Manager change')
+                    })
             },
             retourListe(){
                 this.pret = true
@@ -550,11 +594,9 @@ Each table has different functionalities
                 this.datas = []
                     axios.get('http://localhost:4000/api/users')
                         .then(response => {
-                            console.log("yrdy1")
-                            console.log(response.data.data)
-                            this.datas = response.data.data
+                            this.datas = response.data.data;
                             for (let data in this.datas){
-                                var rol = this.datas[data].role
+                                var rol = this.datas[data].role;
                                 if (rol === 1 ) {
                                     rol = "Manager"
                                 } else if (rol === 2) {
@@ -571,17 +613,14 @@ Each table has different functionalities
                                 })
                             }
                         }).then(()=>{
-                        this.pret = true
-                        console.log(this.rows)
+                        this.pret = true;
                     }).then(()=> this.rows = this.cleanArray(this.rows))
 
             },
             funListTeam(){
-                console.log("mdr")
-                this.rowsTeam = []
+                this.rowsTeam = [];
                 axios.get('http://localhost:4000/api/teams')
                     .then(response => {
-                        console.log(response)
                         this.data = response.data.data
                         for (let data in this.data){
                             this.rowsTeam.push({
